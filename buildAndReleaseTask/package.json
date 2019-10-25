@@ -1,0 +1,19 @@
+{
+  "name": "appknox",
+  "version": "1.0.0",
+  "description": "Appknox azure extension for auto security testing ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "appknox",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "azure-pipelines-task-lib": "^2.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.6",
+    "@types/q": "^1.5.2"
+  }
+}
