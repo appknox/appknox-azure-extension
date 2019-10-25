@@ -1,0 +1,68 @@
+{
+    "manifestVersion": 1,
+    "id": "appknox-security-test",
+    "name": "appknox-security-test",
+    "description": "Azure Extension for Appknox Auto Security Test",
+    "version": "0.0.1",
+    "publisher": "appknox",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "tags": [
+        "mobile",
+        "dast",
+        "mast",
+        "security",
+        "plugin",
+        "appknox"
+    ],
+    "public": true,
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "icons": {
+        "default": "images/appknox.png"
+    },
+    "files": [
+        {
+            "path": "buildAndReleaseTask"
+        },
+        {
+            "path": "images",
+            "addressable": true
+        }
+    ],
+    "contributions": [
+        {
+            "id": "appknox-security-test",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Appknox"
+            }
+        }
+    ],
+    "links": {
+        "home": {
+            "uri": "https://www.appknox.com/"
+        },
+        "support": {
+            "uri": "https://www.appknox.com"
+        },
+        "repository": {
+            "uri": "https://github.com/appknox/appknox-azure-extension"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/appknox/appknox-azure-extension"
+    },
+    "branding": {
+        "color": "rgb(00, 153, 255)",
+        "theme": "dark"
+    }
+}
