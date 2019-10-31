@@ -3,7 +3,7 @@
     "id": "appknox-security-test",
     "name": "appknox-security-test",
     "description": "Azure Extension for Appknox Auto Security Test",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "publisher": "appknox",
     "targets": [
         {
@@ -72,5 +72,22 @@
     "branding": {
         "color": "rgb(00, 153, 255)",
         "theme": "dark"
-    }
+    },
+    "screenshots": [
+        {
+            "path": "images/basic-config.png"
+        },
+        {
+            "path": "images/marketplace.png"
+        },
+        {
+            "path": "images/install.png"
+        },
+        {
+            "path": "images/variable.png"
+        },
+        {
+            "path": "images/logs.png"
+        }
+    ]
 }
