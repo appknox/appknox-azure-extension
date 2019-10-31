@@ -2,8 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "2d64fb4c-0ac3-4bae-9be0-a6b551aa7ae8",
     "name": "appknox-security-test",
-    "friendlyName": "Appknox Security Test Extension",
-    "description": "Appknox Security Test Extension",
+    "friendlyName": "Appknox Security Test",
+    "description": "Appknox Security Test",
     "helpMarkDown": "[Appknox](https://www.appknox.com/)",
     "category": "Build",
     "author": "appknox",
@@ -12,7 +12,8 @@
         "Minor": 1,
         "Patch": 0
     },
-    "instanceNameFormat": "appknox-security-test $(filepath)",
+    "instanceNameFormat": "appknox-security-test",
+    "showEnvironmentVariables": true,
     "inputs": [
         {
             "name": "filepath",

@@ -38,25 +38,38 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var tl = require("azure-pipelines-task-lib/task");
 var path = require("path");
+var fs = require("fs");
 var filepath = tl.getInput("filepath", true) || "";
 var token = tl.getInput("accessToken", true) || "";
 var riskThreshold = tl.getInput("riskThreshold", false);
-tl.setTaskVariable("APPKNOX_ACCESS_TOKEN", token, true);
 var appknoxCLIPath = path.join(__dirname, 'appknox');
+var appknoxPath1 = tl.which("appknox");
+if (!appknoxPath1) {
+    console.log("coming here");
+    fs.chmodSync(appknoxCLIPath, "755");
+    tl.cp(appknoxCLIPath, "/usr/local/bin/");
+}
+var appknoxPath2 = tl.which("appknox");
 function upload(filepath, riskThreshold) {
     return __awaiter(this, void 0, void 0, function () {
-        var appknoxUploader, appknoxChecker, xargs, ret, err_1;
+        var appknoxUploader, xargs, ret, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    appknoxUploader = tl.tool(appknoxCLIPath);
-                    appknoxChecker = tl.tool(appknoxCLIPath);
+                    appknoxUploader = tl.tool(appknoxPath2);
                     xargs = tl.tool('xargs');
                     appknoxUploader.arg("upload")
-                        .arg(filepath);
+                        .arg(filepath)
+                        .arg("--access-token")
+                        .arg(token);
                     if (riskThreshold) {
-                        xargs.arg(appknoxCLIPath).arg("cicheck").arg("--risk-threshold").arg(riskThreshold);
+                        xargs.arg(appknoxPath2)
+                            .arg("cicheck")
+                            .arg("--risk-threshold")
+                            .arg(riskThreshold)
+                            .arg("--access-token")
+                            .arg(token);
                         appknoxUploader.pipeExecOutputToTool(xargs);
                     }
                     return [4 /*yield*/, appknoxUploader.exec()];

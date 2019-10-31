@@ -3,7 +3,7 @@
     "id": "appknox-security-test",
     "name": "appknox-security-test",
     "description": "Azure Extension for Appknox Auto Security Test",
-    "version": "0.0.1",
+    "version": "1.0.2",
     "publisher": "appknox",
     "targets": [
         {
@@ -18,7 +18,6 @@
         "plugin",
         "appknox"
     ],
-    "public": true,
     "categories": [
         "Azure Pipelines"
     ],
@@ -32,6 +31,10 @@
         {
             "path": "images",
             "addressable": true
+        },
+        {
+            "path": "overview.md",
+            "addressable": true
         }
     ],
     "contributions": [
@@ -42,10 +45,15 @@
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "Appknox"
+                "name": "buildAndReleaseTask"
             }
         }
     ],
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
     "links": {
         "home": {
             "uri": "https://www.appknox.com/"
