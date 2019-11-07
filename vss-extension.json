@@ -3,7 +3,7 @@
     "id": "appknox-security-test",
     "name": "appknox-security-test",
     "description": "Azure Extension for Appknox Auto Security Test",
-    "version": "1.0.4",
+    "version": "1.0.6",
     "publisher": "appknox",
     "targets": [
         {
@@ -18,11 +18,12 @@
         "plugin",
         "appknox"
     ],
+    "public": true,
     "categories": [
         "Azure Pipelines"
     ],
     "icons": {
-        "default": "images/appknox.png"
+        "default": "images/icon.png"
     },
     "files": [
         {
