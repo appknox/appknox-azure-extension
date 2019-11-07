@@ -1,9 +1,9 @@
 {
     "manifestVersion": 1,
-    "id": "appknox-security-test",
-    "name": "appknox-security-test",
-    "description": "Azure Extension for Appknox Auto Security Test",
-    "version": "1.0.6",
+    "id": "appknox",
+    "name": "appknox",
+    "description": "Appknox Automated Security Scanning",
+    "version": "1.0.9",
     "publisher": "appknox",
     "targets": [
         {
@@ -12,11 +12,15 @@
     ],
     "tags": [
         "mobile",
-        "dast",
-        "mast",
         "security",
+        "sast",
+        "dast",
         "plugin",
-        "appknox"
+        "appknox",
+        "vulnerability",
+        "scan",
+        "mobile security",
+        "automated scanner"
     ],
     "public": true,
     "categories": [
@@ -40,7 +44,7 @@
     ],
     "contributions": [
         {
-            "id": "appknox-security-test",
+            "id": "appknox",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"

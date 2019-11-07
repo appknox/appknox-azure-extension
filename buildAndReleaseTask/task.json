@@ -1,10 +1,10 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "2d64fb4c-0ac3-4bae-9be0-a6b551aa7ae8",
-    "name": "appknox-security-test",
-    "friendlyName": "Appknox Security Test",
-    "description": "Appknox Security Test",
-    "helpMarkDown": "[Appknox](https://www.appknox.com/)",
+    "name": "appknox",
+    "friendlyName": "Appknox",
+    "description": "Appknox",
+    "helpMarkDown": "[Appknox](https://appknox.com)",
     "category": "Build",
     "author": "appknox",
     "version": {
@@ -12,32 +12,32 @@
         "Minor": 1,
         "Patch": 0
     },
-    "instanceNameFormat": "appknox-security-test",
+    "instanceNameFormat": "appknox",
     "showEnvironmentVariables": true,
     "inputs": [
         {
-            "name": "filepath",
+            "name": "filePath",
             "type": "string",
             "label": "File Path",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "file path"
+            "helpMarkDown": "Path to binary file"
         },
         {
             "name": "accessToken",
             "type": "string",
-            "label": "API token",
+            "label": "Access Token",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "appknox api access token"
+            "helpMarkDown": "Appknox API access token"
         },
         {
             "name": "riskThreshold",
             "type": "string",
-            "label": "Fail build with given risk",
+            "label": "Risk Threshold",
             "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Risk threshold to fail the build"
+            "required": false,
+            "helpMarkDown": "Risk level for which build should fail"
         }
     ],
     "execution": {

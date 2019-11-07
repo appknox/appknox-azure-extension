@@ -1,40 +1,49 @@
-## Appknox Azure Extension For Auto Security Testing
-This extension adds the ability to perform automatic mobile app security testing for Android and iOS mobile apps through the Appknox Automatic Security Testing Platform.
+## Azure Extension for Appknox Automated Scanning
+This extension adds the ability to perform automated app security testing for Android and iOS mobile apps through the [Appknox Platform](https://appknox.com).
 
-## Job Parameters
-Following are parameters needed for the job:
-- filepath: mandatory parameter to specify mobile binary.
-- accessToken: Appknox API Access Token which can be obtained from Account Settings -> Developer Settings in the Appknox Dashboard.
-- riskThreshold: riskThreshold to fail the build. Avialable options are: low, medium, high, critical.
+## Task Parameters
+Following are parameters needed for the task:
 
-### Installation
+|param      | required? | description |
+| ------------- |:-------------:| -----:|
+| `filePath` | true | Path to APK/IPA file |
+|`accessToken`| true | Appknox API Access Token |
+|`riskThreshold`| false | Risk level to fail the build. Avialable options are: `low`, `medium`, `high`, `critical` |
 
-Find it in [Azure Devops Marketplace](https://marketplace.visualstudio.com/azuredevops) using "Appknox Security Test"
-![](images/marketplace.png)
+## Installation
 
-Then install it to your organization:
-![](images/install.png)
+<details>
+  <summary>Install Appknox plugin to your Azure organization</summary>
+  <ol>
+  <li>Click on <strong>Get it free</strong><br><img src="images/marketplace.png"></li>
+  <li>Select your organization and Install <br><img src="images/install.png"></li>
+  <ol>
+</details>
 
-#### Add to your Build
+### Add Appknox Task to your Azure Pipeline
 
-Search for the Appknox Security Test task in the Tasks tab.
-![](images/tasks.png)
+1. From Azure Pipelines Edit page Search for the `Appknox` task in the Tasks tab.
+  ![](images/tasks.png)
 
-#### Basic Config
+2. Configured the required params.
+  ![](images/basic-config.png)
 
-Configure the values of the variables needed.
+3. The above configuration uses env variable `$access_token`, please set the value of it in the variables tab.
+  ![](images/variable.png)
 
-Note: riskThreshold is an optional value. If it is not provided the task will only upload the binary
-      to the Appknox dashboard but the build will not fail when the static scan is completed.
-![](images/basic-config.png)
+#### View Output logs
 
-#### Env Variable
+The above task will upload the binary which will undergo Appknox automated scanning. The progress can be viewed in the pipeline build logs.
 
-The above configuration uses env variable `$access_token`, please set the value of it in the variables tab.
-![](images/variable.png)
+![](images/logs.png)
 
-#### Sample Build Pipeline for Android
+---
+
+## Examples
+
+### Pipeline for Android
 ```
+
 # Android
 # Build your Android project with Gradle.
 # Add steps that test, sign, and distribute the APK, save build artifacts, and more:
@@ -62,6 +71,3 @@ steps:
     accessToken: '$(access_token)'
     riskThreshold: 'medium'
 ```
-
-#### View Output logs
-![](images/logs.png)

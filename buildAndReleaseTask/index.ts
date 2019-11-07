@@ -3,7 +3,7 @@ import tr = require('azure-pipelines-task-lib/toolrunner');
 import path = require('path');
 import fs = require('fs');
 
-const filepath = tl.getInput("filepath", true) || "";
+const filepath = tl.getInput("filePath", true) || "";
 const token = tl.getInput("accessToken", true) || "";
 const riskThreshold = tl.getInput("riskThreshold", false);
 
