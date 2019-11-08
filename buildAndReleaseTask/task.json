@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-    "id": "2d64fb4c-0ac3-4bae-9be0-a6b551aa7ae8",
+    "id": "d0f16a13-2e67-46b5-a4b4-72f5c2ddfa4c",
     "name": "appknox",
     "friendlyName": "Appknox",
     "description": "Appknox",
