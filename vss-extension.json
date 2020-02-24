@@ -3,7 +3,7 @@
     "id": "appknox",
     "name": "appknox",
     "description": "Appknox Automated Security Scanning",
-    "version": "1.0.15",
+    "version": "1.0.16",
     "publisher": "appknox",
     "targets": [
         {
