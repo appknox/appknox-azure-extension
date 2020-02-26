@@ -6,9 +6,9 @@ Following are parameters needed for the task:
 
 |param      | required? | description |
 | ------------- |:-------------:| ----- |
-| `filePath` | true | Path to APK/IPA file |
+| `filePath` | true | Path to APK/IPA binary file |
 |`accessToken`| true | Appknox API Access Token |
-|`riskThreshold`| false | Risk level to fail the build. Avialable options are: `low`, `medium`, `high`, `critical` |
+|`riskThreshold`| true | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low` |
 
 ## Installation
 
@@ -23,17 +23,22 @@ Following are parameters needed for the task:
 ### Add Appknox Task to your Azure Pipeline
 
 1. From Azure Pipelines Edit page Search for the `Appknox` task in the Tasks tab.
+
   ![](images/tasks.png)
 
 2. Configured the required params.
+
   ![](images/basic-config.png)
 
-3. The above configuration uses env variable `$access_token`, please set the value of it in the variables tab.
-  ![](images/variable.png)
+3. `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab.
+
+   ![](images/variable.png)
+
+   [For more information about Variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch)
 
 #### View Output logs
 
-The above task will upload the binary which will undergo Appknox automated scanning. The progress can be viewed in the pipeline build logs.
+The above task will upload the binary which will initiate Appknox automated scanning. The progress can be viewed in the pipeline build logs.
 
 ![](images/logs.png)
 
@@ -67,7 +72,7 @@ steps:
 
 - task: appknox@0
   inputs:
-    filepath: './app/build/outputs/apk/app-debug.apk'
-    accessToken: '$(access_token)'
+    filepath: './app/build/outputs/apk/debug/app-debug.apk'
+    accessToken: '$(appknoxtoken)'
     riskThreshold: 'medium'
 ```

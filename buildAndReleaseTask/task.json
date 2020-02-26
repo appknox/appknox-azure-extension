@@ -1,19 +1,19 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "d0f16a13-2e67-46b5-a4b4-72f5c2ddfa4c",
-    "name": "appknox",
+    "name": "Appknox",
     "friendlyName": "Appknox",
     "description": "Appknox",
-    "helpMarkDown": "[Appknox](https://appknox.com)",
+    "helpMarkDown": "[Learn more about this task](https://marketplace.visualstudio.com/items?itemName=appknox.appknox)",
     "category": "Build",
-    "author": "appknox",
+    "author": "Appknox",
     "version": {
-        "Major": 0,
-        "Minor": 1,
-        "Patch": 0
+        "Major": 1,
+        "Minor": 0,
+        "Patch": 1
     },
-    "instanceNameFormat": "appknox",
-    "showEnvironmentVariables": true,
+    "instanceNameFormat": "Appknox $(filePath)",
+    "showEnvironmentVariables": false,
     "inputs": [
         {
             "name": "filePath",
@@ -37,10 +37,10 @@
             "label": "Risk Threshold",
             "defaultValue": "low",
             "options": {
-                "low": "low",
-                "medium": "medium",
-                "high": "high",
-                "critical": "critical"
+                "low": "Low",
+                "medium": "Medium",
+                "high": "High",
+                "critical": "Critical"
             },
             "required": true,
             "helpMarkDown": "Risk level for which build should fail"

@@ -32,7 +32,7 @@ function getBinaryName() {
 }
 
 async function downloadBinary() {
-    const binName = getBinaryName()
+    const binName = getBinaryName();
     const dPath = downloadPath(binName);
     await download(dPath, path.join(__dirname, "binaries"));
 }
@@ -72,8 +72,11 @@ async function copyAppknox() {
 }
 
 async function upload(filepath: string, riskThreshold: string) {
+    tl.debug("Filepath: " + filepath);
+    tl.debug("Riskthreshold: " + riskThreshold);
     await copyAppknox();
     const appknoxPath = getAppknoxPath();
+    tl.debug("AppknoxBinaryPath: " + appknoxPath);
     try {
         const appknoxUploader = tl.tool(appknoxPath);
         const xargs = tl.tool('xargs')
