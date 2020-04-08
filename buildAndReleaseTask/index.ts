@@ -11,8 +11,15 @@ const os = tl.getVariable("Agent.OS"); // https://docs.microsoft.com/en-us/azure
 const winBinary = "appknox-Windows-x86_64.exe";
 const darwinBinary = "appknox-Darwin-x86_64";
 const linuxBinary = "appknox-Linux-x86_64";
-
 const binaryVersion = pkg.binary;
+const proxy = tl.getHttpProxyConfiguration();
+let taskProxyUrl = (proxy != null) ? proxy.proxyUrl : "";
+const proxyURL = 
+    process.env.HTTPS_PROXY ||
+    process.env.https_proxy ||
+    process.env.HTTP_PROXY ||
+    process.env.http_proxy ||
+    taskProxyUrl;
 
 function downloadPath(binary: string) {
     return `https://github.com/appknox/appknox-go/releases/download/${binaryVersion}/${binary}`;
@@ -76,20 +83,23 @@ async function upload(filepath: string, riskThreshold: string) {
     tl.debug("Riskthreshold: " + riskThreshold);
     await copyAppknox();
     const appknoxPath = getAppknoxPath();
-    tl.debug("AppknoxBinaryPath: " + appknoxPath);
     try {
         const appknoxUploader = tl.tool(appknoxPath);
         const xargs = tl.tool('xargs')
         appknoxUploader.arg("upload")
                         .arg(filepath)
                         .arg("--access-token")
-                        .arg(token);
+                        .arg(token)
+                        .arg("--proxy")
+                        .arg(proxyURL);
         xargs.arg(appknoxPath)
                         .arg("cicheck")
                         .arg("--risk-threshold")
                         .arg(riskThreshold)
                         .arg("--access-token")
-                        .arg(token);
+                        .arg(token)
+                        .arg("--proxy")
+                        .arg(proxyURL);
         appknoxUploader.pipeExecOutputToTool(xargs);
         const ret = await appknoxUploader.exec();
         return ret;
