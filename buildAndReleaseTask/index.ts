@@ -1,110 +1,135 @@
 import tl = require('azure-pipelines-task-lib/task');
 import path = require('path');
 import fs = require('fs');
-const pkg = require('./package.json');
-const download = require('download');
+import download = require('download');
+import pkg = require('./package.json');
 
-const filepath = tl.getInput("filePath", true) || "";
-const token = tl.getInput("accessToken", true) || "";
-const riskThreshold: string = tl.getInput("riskThreshold", true) || "low";
-const os = tl.getVariable("Agent.OS"); // https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#agent-variables
-const winBinary = "appknox-Windows-x86_64.exe";
-const darwinBinary = "appknox-Darwin-x86_64";
-const linuxBinary = "appknox-Linux-x86_64";
-const binaryVersion = pkg.binary;
-const proxy = tl.getHttpProxyConfiguration();
-let taskProxyUrl = (proxy != null) ? proxy.proxyUrl : "";
-const proxyURL = 
-    process.env.HTTPS_PROXY ||
-    process.env.https_proxy ||
-    process.env.HTTP_PROXY ||
-    process.env.http_proxy ||
-    taskProxyUrl;
 
-function downloadPath(binary: string) {
-    return `https://github.com/appknox/appknox-go/releases/download/${binaryVersion}/${binary}`;
+const os = tl.getVariable('Agent.OS') || "";
+const token = tl.getInput('accessToken', true) || "";
+const filepath = tl.getInput('filePath', true) || "";
+const riskThreshold = tl.getInput('riskThreshold', true) || "low";
+
+
+interface AppknoxBinaryConfig {
+    name: string,
+    path: string,
+    copyToBin(src: string, perm: string): void;
+
+}
+type OSAppknoxBinaryMap = Record<string, AppknoxBinaryConfig>
+
+const supported_os: OSAppknoxBinaryMap = {
+    'Linux': {
+        name: "appknox-Linux-x86_64",
+        path: "/usr/local/bin/appknox",
+        copyToBin(src: string, perm: string) {
+            tl.cp(src, this.path, "-f");
+            return fs.chmodSync(this.path, perm);
+        }
+    },
+    'Windows_NT': {
+        name: "appknox-Windows-x86_64.exe",
+        path: "C:\\Program Files\\appknox.exe",
+        copyToBin(src: string, perm: string) {
+            return tl.cp(src, this.path);
+        }
+    },
+    'Darwin': {
+        name: "appknox-Darwin-x86_64",
+        path: "/usr/local/bin/appknox",
+        copyToBin(src: string, perm: string) {
+            tl.cp(src, this.path, "-f");
+            return fs.chmodSync(this.path, perm);
+        }
+    },
 }
 
-function getBinaryName() {
-    if(os == "Windows_NT") {
-        return winBinary;
-    }
-    if(os == "Darwin") {
-        return darwinBinary;
-    }
-    if(os == "Linux") {
-        return linuxBinary;
-    }
-    throw Error("unsupported os " + os);
+
+/**
+ * Gets proxy url set via ENV, fallbacks to agent proxy
+ * @returns proxy url
+ */
+function getProxyURL(): string {
+    const envProxy = (
+        process.env.HTTPS_PROXY ||
+        process.env.https_proxy ||
+        process.env.HTTP_PROXY ||
+        process.env.http_proxy
+    );
+
+    const agentProxyConfig = tl.getHttpProxyConfiguration();
+    const agentProxy = (agentProxyConfig != null) ? agentProxyConfig.proxyUrl : "";
+
+    return envProxy || agentProxy;
 }
 
-async function downloadBinary() {
-    const binName = getBinaryName();
-    const dPath = downloadPath(binName);
-    await download(dPath, path.join(__dirname, "binaries"));
+/**
+ * Gets appknox binary download url
+ * @param os
+ * @returns url
+ */
+function getAppknoxDownloadURL(os: string): string {
+    if (!(os in supported_os)) {
+        throw Error(`Unsupported os ${os}`);
+    }
+    const binaryVersion = pkg.binary;
+    const binaryName = supported_os[os].name;
+    return `https://github.com/appknox/appknox-go/releases/download/${binaryVersion}/${binaryName}`;
 }
 
-function getAppknoxPath(): string {
-    if(os == "Windows_NT") {
-        return "C:\\Program Files\\appknox.exe";
+/**
+ * Download & install appknox binary
+ * @param os
+ * @param proxy
+ * @returns appknox binary path
+ */
+async function installAppknox(os: string, proxy: string): Promise<string> {
+    if (!(os in supported_os)) {
+        throw Error(`Unsupported os ${os}`);
     }
-    if(os == "Darwin" || os == "Linux") {
-        return "/usr/local/bin/appknox";
-    }
-    throw Error("unsupported os " + os);
+    const tmpDir = path.join(__dirname, 'binaries');
+    const tmpFile = path.join(tmpDir, supported_os[os].name);
+
+    const url = getAppknoxDownloadURL(os);
+    await download(url, tmpDir);
+
+    supported_os[os].copyToBin(tmpFile, "755");
+    return supported_os[os].path;
 }
 
-async function copyAppknox() {
-    const appknoxPath = getAppknoxPath();
-    const binPath = path.join(__dirname, 'binaries');
-    const winBin = path.join(binPath, winBinary)
-    const darwinBin = path.join(binPath, darwinBinary);
-    const linuxBin = path.join(binPath, linuxBinary);
-    if(fs.existsSync(appknoxPath)) {
-        return;
-    }
-    await downloadBinary();
-    if(os == "Windows_NT") {
-        return tl.cp(winBin, appknoxPath);
-    }
-    if(os == "Darwin") {
-        tl.cp(darwinBin, appknoxPath, "-f");
-        return fs.chmodSync(appknoxPath, "755");
-    }
-    if(os == "Linux") {
-        tl.cp(linuxBin, appknoxPath, "-f");
-        return fs.chmodSync(appknoxPath, "755");
-    }
-    throw Error("unsupported os " + os);
-}
 
 async function upload(filepath: string, riskThreshold: string) {
-    tl.debug("Filepath: " + filepath);
-    tl.debug("Riskthreshold: " + riskThreshold);
-    await copyAppknox();
-    const appknoxPath = getAppknoxPath();
+    tl.debug(`Filepath: ${filepath}`);
+    tl.debug(`Riskthreshold: ${riskThreshold}`);
+
+    const proxy = getProxyURL();
+    const appknoxPath = await installAppknox(os, proxy);
+
     try {
-        const appknoxUploader = tl.tool(appknoxPath);
+        const appknox = tl.tool(appknoxPath);
         const xargs = tl.tool('xargs')
-        appknoxUploader.arg("upload")
-                        .arg(filepath)
-                        .arg("--access-token")
-                        .arg(token)
-                        .arg("--proxy")
-                        .arg(proxyURL);
+
+        appknox.arg("upload")
+            .arg(filepath)
+            .arg("--access-token")
+            .arg(token)
+            .arg("--proxy")
+            .arg(proxy);
+
         xargs.arg(appknoxPath)
-                        .arg("cicheck")
-                        .arg("--risk-threshold")
-                        .arg(riskThreshold)
-                        .arg("--access-token")
-                        .arg(token)
-                        .arg("--proxy")
-                        .arg(proxyURL);
-        appknoxUploader.pipeExecOutputToTool(xargs);
-        const ret = await appknoxUploader.exec();
-        return ret;
-    }
-    catch(err){
+            .arg("cicheck")
+            .arg("--risk-threshold")
+            .arg(riskThreshold)
+            .arg("--access-token")
+            .arg(token)
+            .arg("--proxy")
+            .arg(proxy);
+
+        appknox.pipeExecOutputToTool(xargs);
+
+        return await appknox.exec();
+    } catch(err) {
         tl.setResult(tl.TaskResult.Failed, err.message);
     }
 }
