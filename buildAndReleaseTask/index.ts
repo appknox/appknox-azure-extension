@@ -4,6 +4,7 @@ import fs = require('fs');
 import download = require('download');
 import pkg = require('./package.json');
 
+const ProxyAgent = require('proxy-agent');
 
 const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
@@ -92,7 +93,10 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     const tmpFile = path.join(tmpDir, supported_os[os].name);
 
     const url = getAppknoxDownloadURL(os);
-    await download(url, tmpDir);
+    const opts = {
+        agent: proxy ? new ProxyAgent(proxy) : undefined
+    };
+    await download(url, tmpDir, opts);
 
     supported_os[os].copyToBin(tmpFile, "755");
     return supported_os[os].path;
