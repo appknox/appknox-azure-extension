@@ -42,7 +42,7 @@
         "high": "High",
         "critical": "Critical"
       },
-      "required": true,
+      "required": false,
       "helpMarkDown": "Risk level for which build should fail"
     }
   ],
