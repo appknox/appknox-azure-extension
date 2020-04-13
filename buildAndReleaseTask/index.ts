@@ -2,16 +2,19 @@ import tl = require('azure-pipelines-task-lib/task');
 import trm = require('azure-pipelines-task-lib/toolrunner');
 import path = require('path');
 import fs = require('fs');
-import download = require('download');
+import util = require('util');
 import pkg = require('./package.json');
 
+const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
 const isUrlHttp = require('is-url-http');
+
+const needleGet = util.promisify(needle.get);
 
 const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
 const filepath = tl.getInput('filePath', true) || "";
-const riskThreshold = tl.getInput('riskThreshold', true) || "low";
+const riskThreshold = tl.getInput('riskThreshold') || "low";
 
 
 interface AppknoxBinaryConfig {
@@ -71,7 +74,6 @@ function getProxyURL(): string {
     return envProxy || agentProxy;
 }
 
-
 /**
  * Determines whether the URL is valid
  * @param url
@@ -99,6 +101,20 @@ function getAppknoxDownloadURL(os: string): string {
 }
 
 /**
+ * Downloads file to the specified destination
+ * @param url
+ * @param proxy
+ * @param dest file
+ */
+async function downloadFile(url: string, proxy: string, dest: string): Promise<any> {
+    const opts = {
+        agent: proxy ? new ProxyAgent(proxy) : undefined,
+        output: dest,
+    };
+    return await needleGet(url, opts);
+}
+
+/**
  * Download & install appknox binary
  * @param os
  * @param proxy
@@ -108,14 +124,12 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     if (!(os in supportedOS)) {
         throw Error(`Unsupported os ${os}`);
     }
-    const tmpDir = path.join(__dirname, 'binaries');
-    const tmpFile = path.join(tmpDir, supportedOS[os].name);
-
     const url = getAppknoxDownloadURL(os);
-    const opts = {
-        agent: proxy ? new ProxyAgent(proxy) : undefined
-    };
-    await download(url, tmpDir, opts);
+    const tmpFile = path.join(__dirname, 'tmp', supportedOS[os].name);
+
+    tl.debug("Downloading appknox binary from " + url);
+    await downloadFile(url, proxy, tmpFile);
+    tl.debug("Download completed");
 
     supportedOS[os].copyToBin(tmpFile, "755");
     return supportedOS[os].path;
