@@ -1,4 +1,5 @@
 import tl = require('azure-pipelines-task-lib/task');
+import trm = require('azure-pipelines-task-lib/toolrunner');
 import path = require('path');
 import fs = require('fs');
 import download = require('download');
@@ -125,34 +126,41 @@ async function upload(filepath: string, riskThreshold: string) {
     tl.debug(`Filepath: ${filepath}`);
     tl.debug(`Riskthreshold: ${riskThreshold}`);
 
-    const proxy = getProxyURL();
-    const hasValidProxy = isValidURL(proxy);
-
-    const appknoxPath = await installAppknox(os, proxy);
+    const _execOptions = <trm.IExecOptions>{
+        silent: false,
+        failOnStdErr: true,
+    }
 
     try {
-        const appknox = tl.tool(appknoxPath);
-        const xargs = tl.tool('xargs')
+        const proxy = getProxyURL();
+        const hasValidProxy = isValidURL(proxy);
+        const appknoxPath = await installAppknox(os, proxy);
 
-        appknox.arg("upload")
+        const uploadCmd: trm.ToolRunner = tl.tool(appknoxPath);
+        uploadCmd.arg("upload")
             .arg(filepath)
             .arg("--access-token")
             .arg(token)
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
 
-        xargs.arg(appknoxPath)
-            .arg("cicheck")
+        let result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
+        if (result.code == 1) {
+            throw result.error;
+        }
+        const fileID: string = result.stdout.trim();
+
+        const checkCmd: trm.ToolRunner = tl.tool(appknoxPath);
+        checkCmd.arg("cicheck")
+            .arg(fileID)
             .arg("--risk-threshold")
             .arg(riskThreshold)
             .arg("--access-token")
             .arg(token)
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
+        return await checkCmd.exec(_execOptions);
 
-        appknox.pipeExecOutputToTool(xargs);
-
-        return await appknox.exec();
     } catch(err) {
         tl.setResult(tl.TaskResult.Failed, err.message);
     }
