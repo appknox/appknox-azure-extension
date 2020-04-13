@@ -3,6 +3,7 @@ import trm = require('azure-pipelines-task-lib/toolrunner');
 import path = require('path');
 import fs = require('fs');
 import http = require('http');
+import mkdirp = require('mkdirp');
 import pkg = require('./package.json');
 
 const needle = require('needle');
@@ -136,10 +137,18 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
         throw Error(`Unsupported os ${os}`);
     }
     const url = getAppknoxDownloadURL(os);
-    const tmpFile = path.join(__dirname, 'tmp', supportedOS[os].name);
 
-    tl.debug("Downloading appknox binary from " + url);
+    const tmpDir = 'binaries'
+    mkdirp.sync(tmpDir);
+    const tmpFile = path.join(__dirname, tmpDir, supportedOS[os].name);
+
+    tl.debug(`Downloading appknox binary from ${url}`);
     await downloadFile(url, proxy, tmpFile);
+
+    if (!fs.existsSync(tmpFile)) {
+        throw Error("Appknox binary download failed");
+    }
+
     tl.debug("Download completed");
 
     supportedOS[os].copyToBin(tmpFile, "755");
