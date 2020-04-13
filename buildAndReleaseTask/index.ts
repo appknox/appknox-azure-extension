@@ -2,14 +2,12 @@ import tl = require('azure-pipelines-task-lib/task');
 import trm = require('azure-pipelines-task-lib/toolrunner');
 import path = require('path');
 import fs = require('fs');
-import util = require('util');
+import http = require('http');
 import pkg = require('./package.json');
 
 const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
 const isUrlHttp = require('is-url-http');
-
-const needleGet = util.promisify(needle.get);
 
 const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
@@ -109,9 +107,22 @@ function getAppknoxDownloadURL(os: string): string {
 async function downloadFile(url: string, proxy: string, dest: string): Promise<any> {
     const opts = {
         agent: proxy ? new ProxyAgent(proxy) : undefined,
+        follow: 5,
         output: dest,
     };
-    return await needleGet(url, opts);
+    return new Promise((resolve: (value?: unknown) => void, reject: (reason?: any) => void) =>
+        needle.get(url, opts, function(err: any, resp: http.IncomingMessage, body: string) {
+            if (err) {
+                return reject(err);
+            }
+            if (resp.statusCode !== 200) {
+                return reject(new Error(`Error code ${resp.statusCode}: ${resp.statusMessage}`));
+            }
+            return resolve(resp);
+        })
+    ).catch(function(err: any) {
+        throw err;
+    });
 }
 
 /**
