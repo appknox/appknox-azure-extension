@@ -37,7 +37,7 @@ const supportedOS: OSAppknoxBinaryMap = {
         name: "appknox-Windows-x86_64.exe",
         path: "C:\\Program Files\\appknox.exe",
         copyToBin(src: string, perm: string) {
-            return tl.cp(src, this.path);
+            return tl.cp(src, this.path, "-f");
         }
     },
     'Darwin': {
