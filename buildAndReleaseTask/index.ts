@@ -5,6 +5,7 @@ import download = require('download');
 import pkg = require('./package.json');
 
 const ProxyAgent = require('proxy-agent');
+const isUrlHttp = require('is-url-http');
 
 const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
@@ -20,7 +21,7 @@ interface AppknoxBinaryConfig {
 }
 type OSAppknoxBinaryMap = Record<string, AppknoxBinaryConfig>
 
-const supported_os: OSAppknoxBinaryMap = {
+const supportedOS: OSAppknoxBinaryMap = {
     'Linux': {
         name: "appknox-Linux-x86_64",
         path: "/usr/local/bin/appknox",
@@ -59,10 +60,27 @@ function getProxyURL(): string {
         process.env.http_proxy
     );
 
+    if (envProxy && !isValidURL(envProxy)) {
+        throw Error(`Invalid proxy url in environment: ${envProxy}`);
+    }
+
     const agentProxyConfig = tl.getHttpProxyConfiguration();
     const agentProxy = (agentProxyConfig != null) ? agentProxyConfig.proxyUrl : "";
 
     return envProxy || agentProxy;
+}
+
+
+/**
+ * Determines whether the URL is valid
+ * @param url
+ * @returns true if valid
+ */
+function isValidURL(url: string): boolean {
+    if (!url) {
+        return false;
+    }
+    return isUrlHttp(url);
 }
 
 /**
@@ -71,11 +89,11 @@ function getProxyURL(): string {
  * @returns url
  */
 function getAppknoxDownloadURL(os: string): string {
-    if (!(os in supported_os)) {
+    if (!(os in supportedOS)) {
         throw Error(`Unsupported os ${os}`);
     }
     const binaryVersion = pkg.binary;
-    const binaryName = supported_os[os].name;
+    const binaryName = supportedOS[os].name;
     return `https://github.com/appknox/appknox-go/releases/download/${binaryVersion}/${binaryName}`;
 }
 
@@ -86,11 +104,11 @@ function getAppknoxDownloadURL(os: string): string {
  * @returns appknox binary path
  */
 async function installAppknox(os: string, proxy: string): Promise<string> {
-    if (!(os in supported_os)) {
+    if (!(os in supportedOS)) {
         throw Error(`Unsupported os ${os}`);
     }
     const tmpDir = path.join(__dirname, 'binaries');
-    const tmpFile = path.join(tmpDir, supported_os[os].name);
+    const tmpFile = path.join(tmpDir, supportedOS[os].name);
 
     const url = getAppknoxDownloadURL(os);
     const opts = {
@@ -98,8 +116,8 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     };
     await download(url, tmpDir, opts);
 
-    supported_os[os].copyToBin(tmpFile, "755");
-    return supported_os[os].path;
+    supportedOS[os].copyToBin(tmpFile, "755");
+    return supportedOS[os].path;
 }
 
 
@@ -108,6 +126,8 @@ async function upload(filepath: string, riskThreshold: string) {
     tl.debug(`Riskthreshold: ${riskThreshold}`);
 
     const proxy = getProxyURL();
+    const hasValidProxy = isValidURL(proxy);
+
     const appknoxPath = await installAppknox(os, proxy);
 
     try {
@@ -118,8 +138,8 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(filepath)
             .arg("--access-token")
             .arg(token)
-            .arg("--proxy")
-            .arg(proxy);
+            .argIf(hasValidProxy, "--proxy")
+            .argIf(hasValidProxy, proxy);
 
         xargs.arg(appknoxPath)
             .arg("cicheck")
@@ -127,8 +147,8 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(riskThreshold)
             .arg("--access-token")
             .arg(token)
-            .arg("--proxy")
-            .arg(proxy);
+            .argIf(hasValidProxy, "--proxy")
+            .argIf(hasValidProxy, proxy);
 
         appknox.pipeExecOutputToTool(xargs);
 
