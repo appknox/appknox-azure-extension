@@ -10,7 +10,7 @@
   "version": {
     "Major": 1,
     "Minor": 1,
-    "Patch": 4
+    "Patch": 6
   },
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
@@ -44,6 +44,14 @@
       },
       "required": false,
       "helpMarkDown": "Risk level for which build should fail"
+    },
+    {
+      "name": "proxy",
+      "type": "string",
+      "label": "Proxy URL",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Proxy Server URL. Accepted via env `HTTP_PROXY` or `HTTPS_PROXY` in the format `http(s)://username:password@hostname:port` (if not set, fallbacks to agent proxy)"
     }
   ],
   "execution": {

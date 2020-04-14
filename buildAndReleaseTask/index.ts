@@ -119,9 +119,11 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
             if (resp.statusCode !== 200) {
                 return reject(new Error(`Error code ${resp.statusCode}: ${resp.statusMessage}`));
             }
+            tl.debug(`File downloaded: ${dest}`);
             return resolve(resp);
         })
     ).catch(function(err: any) {
+        tl.debug(`Error downloading file: ${err}`);
         throw err;
     });
 }
@@ -146,12 +148,14 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     await downloadFile(url, proxy, tmpFile);
 
     if (!fs.existsSync(tmpFile)) {
-        throw Error("Appknox binary download failed");
+        throw Error("Could not download appknox binary");
     }
 
-    tl.debug("Download completed");
+    tl.debug("Download finished");
 
     supportedOS[os].copyToBin(tmpFile, "755");
+    tl.debug(`Appknox installation completed: ${supportedOS[os].path}`);
+
     return supportedOS[os].path;
 }
 
