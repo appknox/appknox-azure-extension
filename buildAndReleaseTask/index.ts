@@ -182,8 +182,8 @@ async function upload(filepath: string, riskThreshold: string) {
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
 
-        let result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
-        if (result.code == 1) {
+        const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
+        if (result.code != 0) {
             throw result.error;
         }
         const fileID: string = result.stdout.trim();
