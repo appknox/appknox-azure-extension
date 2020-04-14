@@ -3,6 +3,7 @@ import trm = require('azure-pipelines-task-lib/toolrunner');
 import path = require('path');
 import fs = require('fs');
 import http = require('http');
+import url = require('url');
 import mkdirp = require('mkdirp');
 import pkg = require('./package.json');
 
@@ -67,10 +68,20 @@ function getProxyURL(): string {
         throw Error(`Invalid proxy url in environment: ${envProxy}`);
     }
 
+    let agentProxy = "";
     const agentProxyConfig = tl.getHttpProxyConfiguration();
-    const agentProxy = (agentProxyConfig != null) ? agentProxyConfig.proxyUrl : "";
+    if (agentProxyConfig != null && agentProxyConfig.proxyUrl != "") {
+        const _u = url.parse(agentProxyConfig.proxyUrl);
+        const user = agentProxyConfig.proxyUsername;
+        const pswd = agentProxyConfig.proxyPassword;
 
-    return envProxy || agentProxy;
+        const u = new url.URL(`${_u.protocol}//${(user || pswd) ? `${user}:${pswd}@` : ''}${_u.host}${_u.path}`);
+        agentProxy = u.href;
+    }
+
+    const proxy = envProxy || agentProxy;
+    tl.debug(`Using proxy: ${proxy}`);
+    return proxy;
 }
 
 /**
