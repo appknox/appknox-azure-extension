@@ -79,7 +79,9 @@ function getProxyURL(): string {
         agentProxy = u.href;
     }
 
-    return envProxy || agentProxy;
+    const proxy = envProxy || agentProxy;
+    tl.debug(`Using proxy: ${proxy}`);
+    return proxy;
 }
 
 /**
