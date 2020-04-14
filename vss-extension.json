@@ -1,98 +1,98 @@
 {
-    "manifestVersion": 1,
-    "id": "Appknox",
-    "name": "Appknox",
-    "description": "Appknox Automated Security Scanning",
-    "version": "1.0.19",
-    "publisher": "Appknox",
-    "targets": [
-        {
-            "id": "Microsoft.VisualStudio.Services"
-        }
-    ],
-    "tags": [
-        "mobile",
-        "security",
-        "sast",
-        "dast",
-        "plugin",
-        "appknox",
-        "vulnerability",
-        "scan",
-        "mobile security",
-        "automated scanner"
-    ],
-    "public": true,
-    "categories": [
-        "Azure Pipelines"
-    ],
-    "icons": {
-        "default": "images/icon.png"
+  "manifestVersion": 1,
+  "id": "Appknox",
+  "name": "Appknox",
+  "description": "Appknox Automated Security Scanning",
+  "version": "1.0.27",
+  "publisher": "Appknox",
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "tags": [
+    "mobile",
+    "security",
+    "sast",
+    "dast",
+    "plugin",
+    "appknox",
+    "vulnerability",
+    "scan",
+    "mobile security",
+    "automated scanner"
+  ],
+  "public": true,
+  "categories": [
+    "Azure Pipelines"
+  ],
+  "icons": {
+    "default": "images/icon.png"
+  },
+  "files": [
+    {
+      "path": "buildAndReleaseTask"
     },
-    "files": [
-        {
-            "path": "buildAndReleaseTask"
-        },
-        {
-            "path": "images",
-            "addressable": true
-        },
-        {
-            "path": "overview.md",
-            "addressable": true
-        }
-    ],
-    "contributions": [
-        {
-            "id": "appknox",
-            "type": "ms.vss-distributed-task.task",
-            "targets": [
-                "ms.vss-distributed-task.tasks"
-            ],
-            "properties": {
-                "name": "buildAndReleaseTask"
-            }
-        }
-    ],
-    "content": {
-        "details": {
-            "path": "overview.md"
-        }
+    {
+      "path": "images",
+      "addressable": true
     },
-    "links": {
-        "home": {
-            "uri": "https://www.appknox.com/"
-        },
-        "support": {
-            "uri": "https://www.appknox.com"
-        },
-        "repository": {
-            "uri": "https://github.com/appknox/appknox-azure-extension"
-        }
+    {
+      "path": "overview.md",
+      "addressable": true
+    }
+  ],
+  "contributions": [
+    {
+      "id": "appknox",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "buildAndReleaseTask"
+      }
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "overview.md"
+    }
+  },
+  "links": {
+    "home": {
+      "uri": "https://www.appknox.com/"
+    },
+    "support": {
+      "uri": "https://www.appknox.com"
     },
     "repository": {
-        "type": "git",
-        "uri": "https://github.com/appknox/appknox-azure-extension"
+      "uri": "https://github.com/appknox/appknox-azure-extension"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/appknox/appknox-azure-extension"
+  },
+  "branding": {
+    "color": "rgb(00, 153, 255)",
+    "theme": "dark"
+  },
+  "screenshots": [
+    {
+      "path": "images/basic-config.png"
     },
-    "branding": {
-        "color": "rgb(00, 153, 255)",
-        "theme": "dark"
+    {
+      "path": "images/marketplace.png"
     },
-    "screenshots": [
-        {
-            "path": "images/basic-config.png"
-        },
-        {
-            "path": "images/marketplace.png"
-        },
-        {
-            "path": "images/install.png"
-        },
-        {
-            "path": "images/variable.png"
-        },
-        {
-            "path": "images/logs.png"
-        }
-    ]
+    {
+      "path": "images/install.png"
+    },
+    {
+      "path": "images/variable.png"
+    },
+    {
+      "path": "images/logs.png"
+    }
+  ]
 }
