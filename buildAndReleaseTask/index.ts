@@ -11,7 +11,7 @@ const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
 const isUrlHttp = require('is-url-http');
 
-const os = tl.getVariable('Agent.OS') || "";
+const os = tl.getVariable('Agent.OS') || "Darwin";
 const token = tl.getInput('accessToken', true) || "";
 const filepath = tl.getInput('filePath', true) || "";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
@@ -125,6 +125,7 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
     return new Promise((resolve: (value?: unknown) => void, reject: (reason?: any) => void) =>
         needle.get(url, opts, function(err: any, resp: http.IncomingMessage, body: string) {
             if (err) {
+                tl.error(err);
                 return reject(err);
             }
             if (resp.statusCode !== 200) {
@@ -155,7 +156,7 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     mkdirp.sync(tmpDir);
     const tmpFile = path.join(__dirname, tmpDir, supportedOS[os].name);
 
-    tl.debug(`Downloading appknox binary from ${url}`);
+    tl.debug(`Downloading appknox binary from ${url} to ${tmpFile}`);
     await downloadFile(url, proxy, tmpFile);
 
     if (!fs.existsSync(tmpFile)) {
