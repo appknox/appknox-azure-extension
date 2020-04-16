@@ -36,7 +36,7 @@ const supportedOS: OSAppknoxBinaryMap = {
     },
     'Windows_NT': {
         name: "appknox-Windows-x86_64.exe",
-        path: "C:\\Program Files\\appknox.exe",
+        path: ".\appknox.exe",
         copyToBin(src: string, perm: string) {
             return tl.cp(src, this.path, "-f");
         }
@@ -177,14 +177,13 @@ async function upload(filepath: string, riskThreshold: string) {
 
     const _execOptions = <trm.IExecOptions>{
         silent: false,
-        failOnStdErr: true,
+        failOnStdErr: false,
     }
 
     try {
         const proxy = getProxyURL();
         const hasValidProxy = isValidURL(proxy);
         const appknoxPath = await installAppknox(os, proxy);
-
         const uploadCmd: trm.ToolRunner = tl.tool(appknoxPath);
         uploadCmd.arg("upload")
             .arg(filepath)
@@ -198,7 +197,7 @@ async function upload(filepath: string, riskThreshold: string) {
             throw result.error;
         }
         const fileID: string = result.stdout.trim();
-
+        tl.debug("File ID: " + fileID);
         const checkCmd: trm.ToolRunner = tl.tool(appknoxPath);
         checkCmd.arg("cicheck")
             .arg(fileID)
