@@ -24,17 +24,20 @@ Following are parameters needed for the task:
 
 1. From Azure Pipelines Edit page Search for the `Appknox` task in the Tasks tab.
 
-  ![](images/tasks.png)
+    ![](images/tasks.png)
 
 2. Configured the required params.
 
-  ![](images/basic-config.png)
+    ![](images/basic-config.png)
 
 3. `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab.
 
-   ![](images/variable.png)
+    ![](images/variable.png)
 
-   [For more information about Variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch)
+    [For more information about Variables](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch)
+
+4. \[Optional\] **Using Proxy**: Appknox task requests can be routed via a web proxy server, which can be configured in environmental variable `HTTP_PROXY` or `HTTPS_PROXY` in the format `http(s)://username:password@hostname:port`. It fallbacks to azure pipeline [agent's proxy](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/proxy) if not set.
+
 
 #### View Output logs
 
