@@ -9,7 +9,7 @@
     "tfxpublish": "npm run compile && tfx extension publish --manifest vss-extension.json -t ${TFX_TOKEN}",
     "compile": "npm run tsbuild && npm run tfxcreate",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "npm run testtfxtoken && release-it --ci && tfxpublish",
+    "release": "npm run testtfxtoken && release-it --ci && npm run tfxpublish",
     "testtfxtoken": "if [[ -z ${TFX_TOKEN} ]]; then echo '$TFX_TOKEN not set' && exit 1 ;fi",
     "postinstall": "cd buildAndReleaseTask && npm install"
   },
@@ -30,7 +30,8 @@
   },
   "homepage": "https://github.com/appknox/appknox-azure-extension#readme",
   "devDependencies": {
-    "tfx-cli": "^0.7.11",
-    "release-it": "^13.5.2"
+    "@release-it/bumper": "^1.1.0",
+    "release-it": "^13.5.2",
+    "tfx-cli": "^0.7.11"
   }
 }
