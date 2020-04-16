@@ -1,0 +1,32 @@
+{
+  "name": "appknox-azure-extension",
+  "version": "1.0.31",
+  "description": "Appknox azure pipeline extension for auto security testing",
+  "main": "index.js",
+  "scripts": {
+    "tsbuild": "cd buildAndReleaseTask && npm run compile",
+    "tfxcreate": "tfx extension create --manifests vss-extension.json",
+    "compile": "npm run tsbuild && npm run tfxcreate",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd buildAndReleaseTask && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appknox/appknox-azure-extension.git"
+  },
+  "keywords": [
+    "Appknox",
+    "Azure",
+    "extension"
+  ],
+  "private": true,
+  "author": "Appknox",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/appknox/appknox-azure-extension/issues"
+  },
+  "homepage": "https://github.com/appknox/appknox-azure-extension#readme",
+  "devDependencies": {
+    "tfx-cli": "^0.7.11"
+  }
+}
