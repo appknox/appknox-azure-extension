@@ -1,6 +1,6 @@
 {
   "name": "appknox-azure-extension",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "Appknox azure pipeline extension for auto security testing",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,8 @@
     "tfxpublish": "npm run compile && tfx extension publish --manifest vss-extension.json -t ${TFX_TOKEN}",
     "compile": "npm run tsbuild && npm run tfxcreate",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "npm run testtfxtoken && release-it && tfxpublish",
-    "testtfxtoken": "if [[ -z ${TFX_TOKEN} ]]; then echo '$TFX_TOKEN not set' && exit 1 ; else echo ${TFX_TOKEN};fi",
+    "release": "npm run testtfxtoken && release-it --ci && tfxpublish",
+    "testtfxtoken": "if [[ -z ${TFX_TOKEN} ]]; then echo '$TFX_TOKEN not set' && exit 1 ;fi",
     "postinstall": "cd buildAndReleaseTask && npm install"
   },
   "repository": {

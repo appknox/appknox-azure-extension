@@ -1,9 +1,12 @@
 {
   "git": {
     "requireBranch": "master",
-    "requireCleanWorkingDir": true
+    "requireCleanWorkingDir": false
   },
   "npm": {
     "skipChecks": true
+  },
+  "github": {
+    "release": true
   }
 }
