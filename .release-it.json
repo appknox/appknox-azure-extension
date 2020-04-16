@@ -1,0 +1,9 @@
+{
+  "git": {
+    "requireBranch": "master",
+    "requireCleanWorkingDir": false
+  },
+  "npm": {
+    "skipChecks": true
+  }
+}
