@@ -9,7 +9,7 @@
     "compile": "tsc"
   },
   "private": true,
-  "author": "Appknox",
+  "author": "Appknox <engineering@appknox.com>",
   "license": "MIT",
   "dependencies": {
     "azure-pipelines-task-lib": "^2.9.3",
