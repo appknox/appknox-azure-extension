@@ -1,6 +1,6 @@
 {
   "name": "appknox-azure-extension",
-  "version": "1.0.35",
+  "version": "2.0.0",
   "description": "Appknox azure pipeline extension for auto security testing",
   "main": "index.js",
   "scripts": {
