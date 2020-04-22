@@ -11,9 +11,9 @@ const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
 const isUrlHttp = require('is-url-http');
 
-const os = tl.getVariable('Agent.OS') || "Darwin";
+const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
-const filepath = tl.getInput('filePath', true) || "/Users/sharat/Downloads/mfva_1.0.apk";
+const filepath = tl.getInput('filePath', true) || "";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
 
 
