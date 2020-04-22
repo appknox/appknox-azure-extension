@@ -36,7 +36,7 @@ const supportedOS: OSAppknoxBinaryMap = {
     },
     'Windows_NT': {
         name: "appknox-Windows-x86_64.exe",
-        path: ".\\appknox.exe",
+        path: path.join(__dirname, "appknox.exe"),
         copyToBin(src: string, perm: string) {
             return tl.cp(src, this.path, "-f");
         }
