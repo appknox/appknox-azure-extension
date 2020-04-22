@@ -4,16 +4,16 @@ import path = require('path');
 import fs = require('fs');
 import http = require('http');
 import url = require('url');
-import mkdirp = require('mkdirp');
+import makeDir = require('make-dir');
 import pkg = require('./package.json');
 
 const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
 const isUrlHttp = require('is-url-http');
 
-const os = tl.getVariable('Agent.OS') || "";
+const os = tl.getVariable('Agent.OS') || "Darwin";
 const token = tl.getInput('accessToken', true) || "";
-const filepath = tl.getInput('filePath', true) || "";
+const filepath = tl.getInput('filePath', true) || "/Users/sharat/Downloads/mfva_1.0.apk";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
 
 
@@ -153,8 +153,8 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     const url = getAppknoxDownloadURL(os);
 
     const tmpDir = 'binaries'
-    mkdirp.sync(tmpDir);
-    const tmpFile = path.join(__dirname, tmpDir, supportedOS[os].name);
+    const binpath = await makeDir(tmpDir);
+    const tmpFile = path.join(binpath, supportedOS[os].name);
 
     tl.debug(`Downloading appknox binary from ${url} to ${tmpFile}`);
     await downloadFile(url, proxy, tmpFile);
@@ -195,7 +195,8 @@ async function upload(filepath: string, riskThreshold: string) {
 
         const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
         if (result.code != 0) {
-            throw result.error;
+            let errmsg = (result.stderr || "Upload Failed").split('\n');
+            throw new Error(errmsg[errmsg.length-1]);
         }
         const fileID: string = result.stdout.trim();
         tl.debug("File ID: " + fileID);
