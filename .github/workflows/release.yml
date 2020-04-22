@@ -19,13 +19,13 @@ jobs:
       uses: actions/setup-node@v1.4.2
       with:
         node-version: 12.x
-     
+
     - name: Install packages
       run: npm install
-    
+
     # Runs a set of commands using the runners shell
     - name: Release
       run: npm run release
-      env: 
+      env:
         TFX_TOKEN: ${{ secrets.TFX_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

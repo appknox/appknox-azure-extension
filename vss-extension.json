@@ -20,7 +20,10 @@
     "vulnerability",
     "scan",
     "mobile security",
-    "automated scanner"
+    "automated scanner",
+    "Azure Pipelines",
+    "Azure DevOps Extensions",
+    "Marketplace"
   ],
   "public": true,
   "categories": [
@@ -57,17 +60,23 @@
   "content": {
     "details": {
       "path": "overview.md"
+    },
+    "license": {
+      "path": "LICENSE.md"
     }
   },
   "links": {
     "home": {
       "uri": "https://www.appknox.com/"
     },
-    "support": {
-      "uri": "https://www.appknox.com"
-    },
     "repository": {
       "uri": "https://github.com/appknox/appknox-azure-extension"
+    },
+    "issues": {
+      "uri": "https://github.com/appknox/appknox-azure-extension/issues"
+    },
+    "support": {
+      "uri": "mailto:support@appknox.com"
     }
   },
   "repository": {
