@@ -10,7 +10,7 @@
     "compile": "npm run tsbuild && npm run tfxcreate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "release": "npm run testtfxtoken && release-it --ci && npm run tfxpublish",
-    "testtfxtoken": "if [[ -z ${TFX_TOKEN} ]]; then echo '$TFX_TOKEN not set' && exit 1 ;fi",
+    "testtfxtoken": "check-env TFX_TOKEN",
     "postinstall": "cd buildAndReleaseTask && npm install"
   },
   "repository": {
@@ -31,6 +31,7 @@
   "homepage": "https://github.com/appknox/appknox-azure-extension#readme",
   "devDependencies": {
     "@release-it/bumper": "^1.1.0",
+    "check-env": "^1.3.0",
     "release-it": "^13.5.2",
     "tfx-cli": "^0.7.11"
   }
