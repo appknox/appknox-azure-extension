@@ -25,7 +25,10 @@ jobs:
 
     # Runs a set of commands using the runners shell
     - name: Release
-      run: npm run release
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "action@github.com"
+        npm run release
       shell: bash
       env:
         TFX_TOKEN: ${{ secrets.TFX_TOKEN }}
