@@ -12,14 +12,15 @@
   "author": "Appknox <engineering@appknox.com>",
   "license": "MIT",
   "dependencies": {
-    "azure-pipelines-task-lib": "^2.9.3",
+    "azure-pipelines-task-lib": "^3.1.0",
     "is-url-http": "^2.2.3",
     "make-dir": "^3.1.0",
     "needle": "^2.6.0",
-    "proxy-agent": "^3.1.1"
+    "proxy-agent": "^4.0.1"
   },
   "devDependencies": {
-    "@types/node": "^12.11.6",
-    "@types/q": "^1.5.4"
+    "@types/node": "^14.14.37",
+    "@types/q": "^1.5.4",
+    "typescript": "4.0.2"
   }
 }
