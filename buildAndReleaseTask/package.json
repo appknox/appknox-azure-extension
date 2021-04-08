@@ -1,6 +1,6 @@
 {
   "name": "appknox",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "binary": "1.2.1",
   "description": "Appknox azure extension for auto security testing",
   "main": "index.js",
@@ -13,7 +13,6 @@
   "license": "MIT",
   "dependencies": {
     "azure-pipelines-task-lib": "^3.1.0",
-    "is-url-http": "^2.2.3",
     "make-dir": "^3.1.0",
     "needle": "^2.6.0",
     "proxy-agent": "^4.0.1"

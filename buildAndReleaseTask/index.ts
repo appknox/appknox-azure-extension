@@ -1,15 +1,14 @@
-import tl = require('azure-pipelines-task-lib/task');
-import trm = require('azure-pipelines-task-lib/toolrunner');
-import path = require('path');
-import fs = require('fs');
-import http = require('http');
-import url = require('url');
-import makeDir = require('make-dir');
-import pkg = require('./package.json');
+import * as tl from 'azure-pipelines-task-lib/task';
+import * as trm from 'azure-pipelines-task-lib/toolrunner';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as http from 'http';
+import * as url from 'url';
+import * as makeDir from 'make-dir';
+import * as pkg from './package.json';
 
 const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
-const isUrlHttp = require('is-url-http');
 
 const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
@@ -89,11 +88,18 @@ function getProxyURL(): string {
  * @param url
  * @returns true if valid
  */
-function isValidURL(url: string): boolean {
-    if (!url) {
+function isValidURL(url_input: string): boolean {
+    if (!url_input) {
         return false;
     }
-    return isUrlHttp(url);
+    try {
+        const validUrl = new url.URL(url_input);
+        return !!validUrl.href;
+    } catch(err){
+        tl.debug(err);
+    }
+
+    return false;
 }
 
 /**
