@@ -6,6 +6,8 @@ pool:
 
 variables:
   - group: Access_Token
+  - name: region
+    value: 'Global' # Add region input: Use 'Global' or 'Saudi'
 
 steps:
   - script: |
@@ -17,5 +19,5 @@ steps:
       filepath: 'C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk'  # Path to the APK
       # accessToken: '245d2ea50185c7660e9953b332f22950311b7fb9'
       accessToken: '$(appknoxtoken)'  # Reference the Appknox access token from environment variables
-      region: 'Global'  # Add region input: Use 'Global' or 'Saudi'
+      region: '$(region)'
       riskThreshold: 'critical'  # Risk threshold for scan
