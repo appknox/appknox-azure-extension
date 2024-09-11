@@ -45,6 +45,18 @@
       },
       "required": false,
       "helpMarkDown": "Risk level for which build should fail"
+    },
+    {
+      "name": "region",
+      "type": "pickList",
+      "label": "Region",
+      "defaultValue": "Global",
+      "options": {
+        "Global": "Global (https://api.appknox.com/)",
+        "Saudi": "Saudi (https://sa.secure.appknox.com/)"
+      },
+      "required": true,
+      "helpMarkDown": "Choose the region for Appknox API"
     }
   ],
   "execution": {
