@@ -4,9 +4,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as url from 'url';
-import * as makeDir from 'make-dir';
-const pkg = require('./package.json');
-// import * as pkg from './package.json';
+const makeDir = require('make-dir');
+import * as pkg from './package.json';
 
 const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
@@ -17,23 +16,10 @@ const filepath = tl.getInput('filePath', true) || "";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
 const region = tl.getInput('region', true) || "Global";  // Get region input
 
-// Define valid tokens for each region
-const saudiToken = "03dbfbdd51db9e9768cf63014b861b820c13f481";
-const globalToken = "245d2ea50185c7660e9953b332f22950311b7fb9";
-
 // Map region to API URL
 let apiUrl = 'https://api.appknox.com/'; // Default to Global
 if (region === 'Saudi') {
     apiUrl = 'https://sa.secure.appknox.com/';
-}
-
-// Check if the accessToken matches the selected region
-if (region === 'Saudi' && token !== saudiToken) {
-    tl.setResult(tl.TaskResult.Failed, "Region is set to 'Saudi', but the access token does not match the Saudi token.");
-    process.exit(1);
-} else if (region === 'Global' && token !== globalToken) {
-    tl.setResult(tl.TaskResult.Failed, "Region is set to 'Global', but the access token does not match the Global token.");
-    process.exit(1);
 }
 
 interface AppknoxBinaryConfig {
@@ -68,11 +54,11 @@ const supportedOS: OSAppknoxBinaryMap = {
             return fs.chmodSync(this.path, perm);
         }
     },
-};
+}
 
 /**
- * Gets proxy URL set via ENV, fallbacks to agent proxy
- * @returns proxy URL
+ * Gets proxy url set via ENV, fallbacks to agent proxy
+ * @returns proxy url
  */
 function getProxyURL(): string {
     const envProxy = (
@@ -83,7 +69,7 @@ function getProxyURL(): string {
     );
 
     if (envProxy && !isValidURL(envProxy)) {
-        throw Error(`Invalid proxy URL in environment: ${envProxy}`);
+        throw Error(`Invalid proxy url in environment: ${envProxy}`);
     }
 
     let agentProxy = "";
@@ -104,7 +90,7 @@ function getProxyURL(): string {
 
 /**
  * Determines whether the URL is valid
- * @param url_input
+ * @param url
  * @returns true if valid
  */
 function isValidURL(url_input: string): boolean {
@@ -114,7 +100,7 @@ function isValidURL(url_input: string): boolean {
     try {
         const validUrl = new url.URL(url_input);
         return !!validUrl.href;
-    } catch (err) {
+    } catch(err){
         tl.debug(err);
     }
 
@@ -122,13 +108,13 @@ function isValidURL(url_input: string): boolean {
 }
 
 /**
- * Gets appknox binary download URL
+ * Gets appknox binary download url
  * @param os
- * @returns URL
+ * @returns url
  */
 function getAppknoxDownloadURL(os: string): string {
     if (!(os in supportedOS)) {
-        throw Error(`Unsupported OS ${os}`);
+        throw Error(`Unsupported os ${os}`);
     }
     const binaryVersion = pkg.binary;
     const binaryName = supportedOS[os].name;
@@ -148,7 +134,7 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
         output: dest,
     };
     return new Promise((resolve: (value?: unknown) => void, reject: (reason?: any) => void) =>
-        needle.get(url, opts, function (err: any, resp: http.IncomingMessage, body: string) {
+        needle.get(url, opts, function(err: any, resp: http.IncomingMessage, body: string) {
             if (err) {
                 tl.error(err);
                 return reject(err);
@@ -159,7 +145,7 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
             tl.debug(`File downloaded: ${dest}`);
             return resolve(resp);
         })
-    ).catch(function (err: any) {
+    ).catch(function(err: any) {
         tl.debug(`Error downloading file: ${err}`);
         throw err;
     });
@@ -173,11 +159,11 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
  */
 async function installAppknox(os: string, proxy: string): Promise<string> {
     if (!(os in supportedOS)) {
-        throw Error(`Unsupported OS ${os}`);
+        throw Error(`Unsupported os ${os}`);
     }
     const url = getAppknoxDownloadURL(os);
 
-    const tmpDir = 'binaries';
+    const tmpDir = 'binaries'
     const binpath = await makeDir(tmpDir);
     const tmpFile = path.join(binpath, supportedOS[os].name);
 
@@ -196,19 +182,14 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     return supportedOS[os].path;
 }
 
-/**
- * Upload and perform security check with Appknox
- * @param filepath
- * @param riskThreshold
- */
 async function upload(filepath: string, riskThreshold: string) {
     tl.debug(`Filepath: ${filepath}`);
-    tl.debug(`Risk threshold: ${riskThreshold}`);
+    tl.debug(`Riskthreshold: ${riskThreshold}`);
 
     const _execOptions = <trm.IExecOptions>{
         silent: false,
         failOnStdErr: false,
-    };
+    }
 
     try {
         const proxy = getProxyURL();
@@ -227,7 +208,7 @@ async function upload(filepath: string, riskThreshold: string) {
         const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
         if (result.code != 0) {
             let errmsg = (result.stderr || "Upload Failed").split('\n');
-            throw new Error(errmsg[errmsg.length - 1]);
+            throw new Error(errmsg[errmsg.length-1]);
         }
         const fileID: string = result.stdout.trim();
         tl.debug("File ID: " + fileID);
@@ -244,7 +225,7 @@ async function upload(filepath: string, riskThreshold: string) {
             .argIf(hasValidProxy, proxy);
         return await checkCmd.exec(_execOptions);
 
-    } catch (err) {
+    } catch(err) {
         tl.setResult(tl.TaskResult.Failed, err.message);
     }
 }
