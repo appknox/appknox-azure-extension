@@ -2,7 +2,7 @@ trigger:
   - master
 
 pool:
-  vmImage: 'windows-latest'  # Use Windows latest VM
+  name: 'Default'  
 
 steps:
   # Step 1: Build the Android project with Gradle
