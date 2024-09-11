@@ -2,23 +2,13 @@ trigger:
   - master
 
 pool:
-  name: 'Default'  
+  name: 'Default'
 
 steps:
-  # Step 1: Build the Android project with Gradle
-  - task: Gradle@2
-    inputs:
-      workingDirectory: ''
-      gradleWrapperFile: 'gradlew'
-      gradleOptions: '-Xmx3072m'
-      publishJUnitResults: false
-      testResultsFiles: '**/TEST-*.xml'
-      tasks: 'assembleDebug'
-
   # Step 2: Run the Appknox security scan
   - task: appknox@2
     inputs:
-      filepath: './app/build/outputs/apk/debug/app-debug.apk'  # Path to the APK
+      filepath: 'C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk'  # Path to the APK
       accessToken: '$(appknoxtoken)'  # Reference the Appknox access token from environment variables
       region: 'Global'  # Add region input: Use 'Global' or 'Saudi'
       riskThreshold: 'medium'  # Risk threshold for scan
