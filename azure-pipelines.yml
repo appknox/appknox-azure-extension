@@ -4,7 +4,13 @@ trigger:
 pool:
   name: 'Default'
 
+variables:
+  - group: Access_Token
+
 steps:
+  - script: |
+      echo "Region selected: $(region)"
+    displayName: 'Log Region Parameter'
   # Step 2: Run the Appknox security scan
   - task: appknox@2
     inputs:
@@ -12,4 +18,4 @@ steps:
       # accessToken: '245d2ea50185c7660e9953b332f22950311b7fb9'
       accessToken: '$(appknoxtoken)'  # Reference the Appknox access token from environment variables
       region: 'Global'  # Add region input: Use 'Global' or 'Saudi'
-      riskThreshold: 'medium'  # Risk threshold for scan
+      riskThreshold: 'critical'  # Risk threshold for scan
