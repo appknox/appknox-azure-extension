@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-      "module": "commonjs",
-      "target": "es6",
-      "declaration": true,
-      "noImplicitAny": false,
-      "sourceMap": false,
-      "resolveJsonModule": true,
-      "moduleResolution": "Node"
+    "module": "commonjs",
+    "target": "es6",
+    "declaration": true,
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
   "exclude": [
-      "node_modules"
+    "node_modules"
   ]
 }

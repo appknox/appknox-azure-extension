@@ -5,7 +5,8 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as url from 'url';
 import * as makeDir from 'make-dir';
-import * as pkg from './package.json';
+const pkg = require('./package.json');
+// import * as pkg from './package.json';
 
 const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
