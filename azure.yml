@@ -9,10 +9,14 @@ variables:
   - name: region
     value: 'Saudi' # Add region input: Use 'Global' or 'Saudi'
 
+
 steps:
+  - checkout: self  # Check out the repository containing the Appknox task
+
   - script: |
       echo "Region selected: $(region)"
     displayName: 'Log Region Parameter'
+
   # Step 2: Run the Appknox security scan
   - task: appknox@2
     inputs:

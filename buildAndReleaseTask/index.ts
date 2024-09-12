@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as url from 'url';
 const makeDir = require('make-dir');
-import * as pkg from './package.json';
+const pkg = require('./package.json');
 
 const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
@@ -21,6 +21,8 @@ let apiUrl = 'https://api.appknox.com/'; // Default to Global
 if (region === 'Saudi') {
     apiUrl = 'https://sa.secure.appknox.com/';
 }
+
+console.log(`Using API URL: ${apiUrl} based on region: ${region}`);
 
 interface AppknoxBinaryConfig {
     name: string,
