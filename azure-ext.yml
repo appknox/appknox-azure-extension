@@ -5,9 +5,9 @@ pool:
   name: 'Default'
 
 variables:
-  - group: Access_Token
+  - group: Access_Token  # Ensure this group contains appknoxtoken
   - name: region
-    value: 'global'  # Use 'Global' or 'Saudi'
+    value: 'global'  # Use 'global' or 'saudi'
   - name: riskThreshold
     value: 'critical'  # Set your desired risk threshold
 
@@ -22,9 +22,10 @@ steps:
 
   # Run the Appknox security scan using Appknox Go on Windows
   - powershell: |
-      $scanId = C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe upload C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk --access-token $(appknoxtoken) --region $(region)
+      $env:APPKNOX_ACCESS_TOKEN = "$(appknoxtoken)"
+      $scanId = & "C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe" upload "C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk" --access-token $(appknoxtoken) --region $(region)
       Write-Host "Uploaded Scan ID: $scanId"
-      C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe cicheck $scanId --region $(region) --risk-threshold $(riskThreshold)
+      & "C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe" cicheck $scanId --region $(region) --risk-threshold $(riskThreshold)
     displayName: 'Run Appknox Security Scan'
     env:
       appknoxtoken: '$(appknoxtoken)'
