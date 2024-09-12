@@ -202,7 +202,7 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(filepath)
             .arg("--access-token")
             .arg(token)
-            .arg("--api-url")  // Adding the apiUrl argument
+            .arg("--host")  // Use --host to specify the full URL
             .arg(apiUrl)       // Using the correct API URL based on region
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
@@ -221,7 +221,7 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(riskThreshold)
             .arg("--access-token")
             .arg(token)
-            .arg("--api-url")  // Adding the apiUrl argument
+            .arg("--host")  // Use --host to specify the full URL
             .arg(apiUrl)       // Using the correct API URL based on region
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
