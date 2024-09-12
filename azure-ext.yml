@@ -1,0 +1,25 @@
+trigger:
+  - master # auto
+pool:
+  vmImage: 'Default' # Use 'windows-latest' or specify your self-hosted agent pool
+variables:
+  - group: Access_Token # This should contain 'appknoxtoken'
+  - name: region
+    value: 'Global' # Add region input: Use 'Global' or 'Saudi'
+  - name: riskThreshold
+    value: 'critical' # Set the default risk threshold (low, medium, high, critical)
+steps:
+  - checkout: self # Check out the repository (if needed)
+  # Step 1: Log the selected region and risk threshold
+  - script: |
+      echo "Region selected: $(region)"
+      echo "Risk Threshold: $(riskThreshold)"
+    displayName: 'Log Region and Risk Threshold'
+  # Step 2: Run the Appknox security scan using appknox.exe with risk threshold
+  - script: |
+      C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe upload --file-path C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk --access-token $(appknoxtoken) --region $(region) --risk-threshold $(riskThreshold)
+    displayName: 'Appknox Security Scan'
+    env:
+      accessToken: '$(appknoxtoken)' # Reference the Appknox access token from the variable group
+      region: '$(region)' # Use the region directly
+      riskThreshold: '$(riskThreshold)' # Use the specified risk threshold
