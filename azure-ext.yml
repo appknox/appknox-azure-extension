@@ -5,7 +5,7 @@ pool:
 variables:
   - group: Access_Token # This should contain 'appknoxtoken'
   - name: region
-    value: 'Global' # Add region input: Use 'Global' or 'Saudi'
+    value: 'global' # Add region input: Use 'Global' or 'Saudi'
   - name: riskThreshold
     value: 'critical' # Set the default risk threshold (low, medium, high, critical)
 steps:
@@ -17,7 +17,7 @@ steps:
     displayName: 'Log Region and Risk Threshold'
   # Step 2: Run the Appknox security scan using appknox.exe with risk threshold
   - script: |
-      C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe upload --file-path C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk --access-token $(appknoxtoken) --region $(region) --risk-threshold $(riskThreshold)
+      C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe upload C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk --access-token $(appknoxtoken) --region $(region)
     displayName: 'Appknox Security Scan'
     env:
       accessToken: '$(appknoxtoken)' # Reference the Appknox access token from the variable group
