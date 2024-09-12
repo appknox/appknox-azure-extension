@@ -7,7 +7,7 @@ pool:
 variables:
   - group: Access_Token  # Ensure this group contains appknoxtoken
   - name: region
-    value: 'global'  # Use 'global' or 'saudi'
+    value: 'saudi'  # Use 'global' or 'saudi'
   - name: riskThreshold
     value: 'critical'  # Set your desired risk threshold
 
