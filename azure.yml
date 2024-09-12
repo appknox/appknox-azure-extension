@@ -18,7 +18,7 @@ steps:
     displayName: 'Log Region Parameter'
 
   # Step 2: Run the Appknox security scan
-  - task: Yashvi-Appknox.Appknox@2
+  - task: Yashvi-Appknox.Appknox@2 #new name
     inputs:
       filepath: 'C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk'  # Path to the APK
       accessToken: '$(appknoxtoken)'  # Reference the Appknox access token from environment variables
