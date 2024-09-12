@@ -1,7 +1,7 @@
 trigger:
   - master # auto
 pool:
-  vmImage: 'Default' # Use 'windows-latest' or specify your self-hosted agent pool
+  name: 'Default' # Use 'windows-latest' or specify your self-hosted agent pool
 variables:
   - group: Access_Token # This should contain 'appknoxtoken'
   - name: region
