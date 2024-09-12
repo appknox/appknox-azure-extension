@@ -1,5 +1,5 @@
 trigger:
-  - master #auto
+  - master # auto
 
 pool:
   vmImage: 'Default'  # Use 'windows-latest' or specify your self-hosted agent pool
