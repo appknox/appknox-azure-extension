@@ -7,7 +7,7 @@ pool:
 variables:
   - group: Access_Token
   - name: region
-    value: 'Saudi' # Add region input: Use 'Global' or 'Saudi'
+    value: 'Global' # Add region input: Use 'Global' or 'Saudi'
 
 
 steps:
