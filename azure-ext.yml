@@ -1,25 +1,31 @@
 trigger:
-  - master # auto
+  - master
+
 pool:
-  name: 'Default' # Use 'windows-latest' or specify your self-hosted agent pool
+  name: 'Default'
+
 variables:
-  - group: Access_Token # This should contain 'appknoxtoken'
+  - group: Access_Token
   - name: region
-    value: 'global' # Add region input: Use 'Global' or 'Saudi'
+    value: 'global'  # Use 'Global' or 'Saudi'
   - name: riskThreshold
-    value: 'critical' # Set the default risk threshold (low, medium, high, critical)
+    value: 'critical'  # Set your desired risk threshold
+
 steps:
-  - checkout: self # Check out the repository (if needed)
-  # Step 1: Log the selected region and risk threshold
+  - checkout: self  # Check out the repository
+
+  # Log the selected region and risk threshold
   - script: |
       echo "Region selected: $(region)"
       echo "Risk Threshold: $(riskThreshold)"
     displayName: 'Log Region and Risk Threshold'
-  # Step 2: Run the Appknox security scan using appknox.exe with risk threshold
-  - script: |
-      C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe upload C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk --access-token $(appknoxtoken) --region $(region)
-    displayName: 'Appknox Security Scan'
+
+  # Run the Appknox security scan using Appknox Go on Windows
+  - powershell: |
+      $scanId = C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe upload C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk --access-token $(appknoxtoken) --region $(region)
+      Write-Host "Uploaded Scan ID: $scanId"
+      C:\Users\hirakdesai\Documents\GitHub\appknox-go\appknox.exe cicheck $scanId --region $(region) --risk-threshold $(riskThreshold)
+    displayName: 'Run Appknox Security Scan'
     env:
-      accessToken: '$(appknoxtoken)' # Reference the Appknox access token from the variable group
-      region: '$(region)' # Use the region directly
-      riskThreshold: '$(riskThreshold)' # Use the specified risk threshold
+      appknoxtoken: '$(appknoxtoken)'
+      region: '$(region)'
