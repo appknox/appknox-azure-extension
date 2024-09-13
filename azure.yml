@@ -18,7 +18,7 @@ steps:
     displayName: 'Log Region Parameter'
 
   # Step 3: Run the Appknox security scan using Appknox task
-  - task: Yashvi-Appknox.Appknox@2  # Use your custom task created in the marketplace
+  - task: Appknox@2  # Use your custom task created in the marketplace
     inputs:
       filepath: 'C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk'  # Path to the APK
       accessToken: '$(appknoxtoken)'  # Access token fetched from the variable group
