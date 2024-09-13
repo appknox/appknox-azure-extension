@@ -7,7 +7,7 @@ pool:
 variables:
   - group: Access_Token  # This should contain 'appknoxtoken'
   - name: region
-    value: 'Global'  # Set your default region here (Global or Saudi)
+    value: 'global'  # Set your default region here (Global or Saudi)
 
 steps:
   - checkout: self  # Step 1: Check out the repository containing the Appknox task

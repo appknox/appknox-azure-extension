@@ -49,15 +49,10 @@ var token = tl.getInput('accessToken', true) || "";
 var filepath = tl.getInput('filePath', true) || "";
 var riskThreshold = tl.getInput('riskThreshold') || "low";
 var region = tl.getInput('region', true) || "Global"; // Get region input
-// Map region to API URL
-var apiUrl = 'https://api.appknox.com/'; // Default to Global
-if (region === 'Saudi') {
-    apiUrl = 'https://sa.secure.appknox.com/';
-}
-console.log("Using API URL: ".concat(apiUrl, " based on region: ").concat(region));
+console.log("Using Region: ".concat(region));
 var supportedOS = {
     'Linux': {
-        name: "appknox-Linux-x86_64",
+        name: "appknox-Linux-x86_64", // Updated binary name
         path: "/usr/local/bin/appknox",
         copyToBin: function (src, perm) {
             tl.cp(src, this.path, "-f");
@@ -65,14 +60,14 @@ var supportedOS = {
         }
     },
     'Windows_NT': {
-        name: "appknox-Windows-x86_64.exe",
+        name: "appknox-Windows-x86_64.exe", // Updated binary name
         path: path.join(__dirname, "appknox.exe"),
         copyToBin: function (src, perm) {
             return tl.cp(src, this.path, "-f");
         }
     },
     'Darwin': {
-        name: "appknox-Darwin-x86_64",
+        name: "appknox-Darwin-x86_64", // Updated binary name
         path: "/usr/local/bin/appknox",
         copyToBin: function (src, perm) {
             tl.cp(src, this.path, "-f");
@@ -124,7 +119,7 @@ function isValidURL(url_input) {
     return false;
 }
 /**
- * Gets appknox binary download url
+ * Gets appknox binary download url from your custom fork
  * @param os
  * @returns url
  */
@@ -134,7 +129,7 @@ function getAppknoxDownloadURL(os) {
     }
     var binaryVersion = pkg.binary;
     var binaryName = supportedOS[os].name;
-    return "https://github.com/appknox/appknox-go/releases/download/".concat(binaryVersion, "/").concat(binaryName);
+    return "https://github.com/yashviagrawal/appknox-go/releases/download/v1.0.0/".concat(binaryName); // Update URL to your repo
 }
 /**
  * Downloads file to the specified destination
@@ -231,8 +226,8 @@ function upload(filepath, riskThreshold) {
                         .arg(filepath)
                         .arg("--access-token")
                         .arg(token)
-                        .arg("--host") // Use --host to specify the full URL
-                        .arg(apiUrl) // Using the correct API URL based on region
+                        .arg("--region") // Use --region flag instead of host
+                        .arg(region) // Pass the region directly
                         .argIf(hasValidProxy, "--proxy")
                         .argIf(hasValidProxy, proxy);
                     result = uploadCmd.execSync(_execOptions);
@@ -249,8 +244,8 @@ function upload(filepath, riskThreshold) {
                         .arg(riskThreshold)
                         .arg("--access-token")
                         .arg(token)
-                        .arg("--host") // Use --host to specify the full URL
-                        .arg(apiUrl) // Using the correct API URL based on region
+                        .arg("--region") // Use --region flag for API region
+                        .arg(region) // Pass the region directly
                         .argIf(hasValidProxy, "--proxy")
                         .argIf(hasValidProxy, proxy);
                     return [4 /*yield*/, checkCmd.exec(_execOptions)];

@@ -16,13 +16,7 @@ const filepath = tl.getInput('filePath', true) || "";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
 const region = tl.getInput('region', true) || "Global";  // Get region input
 
-// Map region to API URL
-let apiUrl = 'https://api.appknox.com/'; // Default to Global
-if (region === 'Saudi') {
-    apiUrl = 'https://sa.secure.appknox.com/';
-}
-
-console.log(`Using API URL: ${apiUrl} based on region: ${region}`);
+console.log(`Using Region: ${region}`);
 
 interface AppknoxBinaryConfig {
     name: string,
@@ -34,7 +28,7 @@ type OSAppknoxBinaryMap = Record<string, AppknoxBinaryConfig>;
 
 const supportedOS: OSAppknoxBinaryMap = {
     'Linux': {
-        name: "appknox-Linux-x86_64",
+        name: "appknox-Linux-x86_64", // Updated binary name
         path: "/usr/local/bin/appknox",
         copyToBin(src: string, perm: string) {
             tl.cp(src, this.path, "-f");
@@ -42,14 +36,14 @@ const supportedOS: OSAppknoxBinaryMap = {
         }
     },
     'Windows_NT': {
-        name: "appknox-Windows-x86_64.exe",
+        name: "appknox-Windows-x86_64.exe", // Updated binary name
         path: path.join(__dirname, "appknox.exe"),
         copyToBin(src: string, perm: string) {
             return tl.cp(src, this.path, "-f");
         }
     },
     'Darwin': {
-        name: "appknox-Darwin-x86_64",
+        name: "appknox-Darwin-x86_64", // Updated binary name
         path: "/usr/local/bin/appknox",
         copyToBin(src: string, perm: string) {
             tl.cp(src, this.path, "-f");
@@ -102,7 +96,7 @@ function isValidURL(url_input: string): boolean {
     try {
         const validUrl = new url.URL(url_input);
         return !!validUrl.href;
-    } catch(err){
+    } catch (err) {
         tl.debug(err);
     }
 
@@ -110,7 +104,7 @@ function isValidURL(url_input: string): boolean {
 }
 
 /**
- * Gets appknox binary download url
+ * Gets appknox binary download url from your custom fork
  * @param os
  * @returns url
  */
@@ -120,7 +114,7 @@ function getAppknoxDownloadURL(os: string): string {
     }
     const binaryVersion = pkg.binary;
     const binaryName = supportedOS[os].name;
-    return `https://github.com/appknox/appknox-go/releases/download/${binaryVersion}/${binaryName}`;
+    return `https://github.com/yashviagrawal/appknox-go/releases/download/v1.0.0/${binaryName}`; // Update URL to your repo
 }
 
 /**
@@ -136,7 +130,7 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
         output: dest,
     };
     return new Promise((resolve: (value?: unknown) => void, reject: (reason?: any) => void) =>
-        needle.get(url, opts, function(err: any, resp: http.IncomingMessage, body: string) {
+        needle.get(url, opts, function (err: any, resp: http.IncomingMessage, body: string) {
             if (err) {
                 tl.error(err);
                 return reject(err);
@@ -147,7 +141,7 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
             tl.debug(`File downloaded: ${dest}`);
             return resolve(resp);
         })
-    ).catch(function(err: any) {
+    ).catch(function (err: any) {
         tl.debug(`Error downloading file: ${err}`);
         throw err;
     });
@@ -165,7 +159,7 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     }
     const url = getAppknoxDownloadURL(os);
 
-    const tmpDir = 'binaries'
+    const tmpDir = 'binaries';
     const binpath = await makeDir(tmpDir);
     const tmpFile = path.join(binpath, supportedOS[os].name);
 
@@ -202,15 +196,15 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(filepath)
             .arg("--access-token")
             .arg(token)
-            .arg("--host")  // Use --host to specify the full URL
-            .arg(apiUrl)       // Using the correct API URL based on region
+            .arg("--region")  // Use --region flag instead of host
+            .arg(region)       // Pass the region directly
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
 
         const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
         if (result.code != 0) {
             let errmsg = (result.stderr || "Upload Failed").split('\n');
-            throw new Error(errmsg[errmsg.length-1]);
+            throw new Error(errmsg[errmsg.length - 1]);
         }
         const fileID: string = result.stdout.trim();
         tl.debug("File ID: " + fileID);
@@ -221,13 +215,13 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(riskThreshold)
             .arg("--access-token")
             .arg(token)
-            .arg("--host")  // Use --host to specify the full URL
-            .arg(apiUrl)       // Using the correct API URL based on region
+            .arg("--region")  // Use --region flag for API region
+            .arg(region)      // Pass the region directly
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
         return await checkCmd.exec(_execOptions);
 
-    } catch(err) {
+    } catch (err) {
         tl.setResult(tl.TaskResult.Failed, err.message);
     }
 }
