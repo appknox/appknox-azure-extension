@@ -10,7 +10,7 @@
   "version": {
     "Major": 2,
     "Minor": 0,
-    "Patch": 17
+    "Patch": 13
   },
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
@@ -43,7 +43,7 @@
         "high": "High",
         "critical": "Critical"
       },
-      "required": false,
+      "required": true,
       "helpMarkDown": "Risk level for which build should fail"
     },
     {
@@ -55,7 +55,7 @@
         "global": "Global",
         "saudi": "Saudi"
       },
-      "required": true,
+      "required": false,
       "helpMarkDown": "Choose the Appknox Region"
     }
   ],

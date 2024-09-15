@@ -9,6 +9,7 @@ Following are parameters needed for the task:
 | `filePath` | true | Path to APK/IPA binary file |
 |`accessToken`| true | Appknox API Access Token |
 |`riskThreshold`| true | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low` |
+| `region`          | Specify the Appknox region. <br><br>Accepted values: `Global`, `Saudi` <br><br>Default: `Global` |
 
 ## Installation
 
@@ -78,4 +79,5 @@ steps:
     filepath: './app/build/outputs/apk/debug/app-debug.apk'
     accessToken: '$(appknoxtoken)'
     riskThreshold: 'medium'
+    region: 'global'
 ```
