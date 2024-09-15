@@ -6,21 +6,14 @@ pool:
 
 variables:
   - group: Access_Token  # This should contain 'appknoxtoken'
-  - name: region
-    value: 'saudi'  # Set your default region here (Global or Saudi)
 
 steps:
   - checkout: self  # Step 1: Check out the repository containing the Appknox task
 
-  # Step 2: Log the selected region
-  - script: |
-      echo "Region selected: $(region)"
-    displayName: 'Log Region Parameter'
-
   # Step 3: Run the Appknox security scan using Appknox task
-  - task: Appknox@2  # Use your custom task created in the marketplace
+  - task: Appknox@2
     inputs:
-      filepath: 'C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk'  # Path to the APK
-      accessToken: '$(appknoxtoken)'  # Access token fetched from the variable group
-      region: '$(region)'  # Pass the region (Global or Saudi)
-      riskThreshold: 'critical'  # Set the risk threshold for the scan
+      filePath: 'C:\Users\hirakdesai\Documents\GitHub\app-release-unsigned.apk'
+      accessToken: '$(appknoxtoken)'
+      riskThreshold: 'high'
+      region: 'global'
