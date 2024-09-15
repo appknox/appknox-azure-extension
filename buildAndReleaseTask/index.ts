@@ -28,7 +28,7 @@ type OSAppknoxBinaryMap = Record<string, AppknoxBinaryConfig>;
 
 const supportedOS: OSAppknoxBinaryMap = {
     'Linux': {
-        name: "appknox-Linux-x86_64", // Updated binary name
+        name: "appknox-Linux-x86_64",
         path: "/usr/local/bin/appknox",
         copyToBin(src: string, perm: string) {
             tl.cp(src, this.path, "-f");
@@ -36,14 +36,14 @@ const supportedOS: OSAppknoxBinaryMap = {
         }
     },
     'Windows_NT': {
-        name: "appknox-Windows-x86_64.exe", // Updated binary name
+        name: "appknox-Windows-x86_64.exe",
         path: path.join(__dirname, "appknox.exe"),
         copyToBin(src: string, perm: string) {
             return tl.cp(src, this.path, "-f");
         }
     },
     'Darwin': {
-        name: "appknox-Darwin-x86_64", // Updated binary name
+        name: "appknox-Darwin-x86_64",
         path: "/usr/local/bin/appknox",
         copyToBin(src: string, perm: string) {
             tl.cp(src, this.path, "-f");
@@ -96,7 +96,7 @@ function isValidURL(url_input: string): boolean {
     try {
         const validUrl = new url.URL(url_input);
         return !!validUrl.href;
-    } catch (err) {
+    } catch(err){
         tl.debug(err);
     }
 
@@ -104,7 +104,7 @@ function isValidURL(url_input: string): boolean {
 }
 
 /**
- * Gets appknox binary download url from your custom fork
+ * Gets appknox binary download url
  * @param os
  * @returns url
  */
@@ -114,7 +114,7 @@ function getAppknoxDownloadURL(os: string): string {
     }
     const binaryVersion = pkg.binary;
     const binaryName = supportedOS[os].name;
-    return `https://github.com/yashviagrawal/appknox-go/releases/download/v1.0.0/${binaryName}`; // Update URL to your repo
+    return `https://github.com/appknox/appknox-go/releases/download/${binaryVersion}/${binaryName}`;
 }
 
 /**
@@ -130,7 +130,7 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
         output: dest,
     };
     return new Promise((resolve: (value?: unknown) => void, reject: (reason?: any) => void) =>
-        needle.get(url, opts, function (err: any, resp: http.IncomingMessage, body: string) {
+        needle.get(url, opts, function(err: any, resp: http.IncomingMessage, body: string) {
             if (err) {
                 tl.error(err);
                 return reject(err);
@@ -141,7 +141,7 @@ async function downloadFile(url: string, proxy: string, dest: string): Promise<a
             tl.debug(`File downloaded: ${dest}`);
             return resolve(resp);
         })
-    ).catch(function (err: any) {
+    ).catch(function(err: any) {
         tl.debug(`Error downloading file: ${err}`);
         throw err;
     });
@@ -204,7 +204,7 @@ async function upload(filepath: string, riskThreshold: string) {
         const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
         if (result.code != 0) {
             let errmsg = (result.stderr || "Upload Failed").split('\n');
-            throw new Error(errmsg[errmsg.length - 1]);
+            throw new Error(errmsg[errmsg.length-1]);
         }
         const fileID: string = result.stdout.trim();
         tl.debug("File ID: " + fileID);
@@ -221,7 +221,7 @@ async function upload(filepath: string, riskThreshold: string) {
             .argIf(hasValidProxy, proxy);
         return await checkCmd.exec(_execOptions);
 
-    } catch (err) {
+    } catch(err) {
         tl.setResult(tl.TaskResult.Failed, err.message);
     }
 }
