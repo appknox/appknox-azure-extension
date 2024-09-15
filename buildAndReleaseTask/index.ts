@@ -14,7 +14,7 @@ const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
 const filepath = tl.getInput('filePath', true) || "";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
-const region = tl.getInput('region', true) || "Global";  // Get region input
+const region = tl.getInput('region', true) || "global";  // Get region input
 
 console.log(`Using Region: ${region}`);
 

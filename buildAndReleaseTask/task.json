@@ -10,7 +10,7 @@
   "version": {
     "Major": 2,
     "Minor": 0,
-    "Patch": 16
+    "Patch": 17
   },
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
@@ -50,13 +50,13 @@
       "name": "region",
       "type": "pickList",
       "label": "Region",
-      "defaultValue": "Global",
+      "defaultValue": "global",
       "options": {
-        "Global": "Global (https://api.appknox.com/)",
-        "Saudi": "Saudi (https://sa.secure.appknox.com/)"
+        "global": "Global",
+        "saudi": "Saudi"
       },
       "required": true,
-      "helpMarkDown": "Choose the region for Appknox API"
+      "helpMarkDown": "Choose the Appknox Region"
     }
   ],
   "execution": {
