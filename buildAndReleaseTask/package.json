@@ -12,9 +12,9 @@
   "author": "Appknox <engineering@appknox.com>",
   "license": "MIT",
   "dependencies": {
-    "azure-pipelines-task-lib": "^3.1.0",
+    "azure-pipelines-task-lib": "^3.4.0",
     "make-dir": "^3.1.0",
-    "needle": "^2.6.0",
+    "needle": "^2.9.1",
     "proxy-agent": "^4.0.1"
   },
   "devDependencies": {
