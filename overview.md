@@ -4,11 +4,12 @@ This extension adds the ability to perform automated app security testing for An
 ## Task Parameters
 Following are parameters needed for the task:
 
-|param      | required? | description |
-| ------------- |:-------------:| ----- |
-| `filePath` | true | Path to APK/IPA binary file |
-|`accessToken`| true | Appknox API Access Token |
-|`riskThreshold`| true | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low` |
+| param           | required? | description                                                                                                 |
+|-----------------|:---------:|-------------------------------------------------------------------------------------------------------------|
+| `filePath`      |   true    | Path to APK/IPA binary file                                                                                 |
+| `accessToken`   |   true    | Appknox API Access Token                                                                                    |
+| `riskThreshold` |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low` |
+| `region`        |   false   | Specify the Appknox region. Accepted values: `Global`, `Saudi`. Default: `Global`                           |
 
 ## Installation
 
@@ -78,4 +79,5 @@ steps:
     filepath: './app/build/outputs/apk/debug/app-debug.apk'
     accessToken: '$(appknoxtoken)'
     riskThreshold: 'medium'
+    region: 'global'
 ```

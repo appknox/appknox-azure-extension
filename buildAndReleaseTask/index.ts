@@ -4,8 +4,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as url from 'url';
-import * as makeDir from 'make-dir';
-import * as pkg from './package.json';
+const makeDir = require('make-dir');
+const pkg = require('./package.json');
 
 const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
@@ -14,15 +14,17 @@ const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
 const filepath = tl.getInput('filePath', true) || "";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
+const region = tl.getInput('region', true) || "global";  // Get region input
 
+console.log(`Using Region: ${region}`);
 
 interface AppknoxBinaryConfig {
     name: string,
     path: string,
     copyToBin(src: string, perm: string): void;
-
 }
-type OSAppknoxBinaryMap = Record<string, AppknoxBinaryConfig>
+
+type OSAppknoxBinaryMap = Record<string, AppknoxBinaryConfig>;
 
 const supportedOS: OSAppknoxBinaryMap = {
     'Linux': {
@@ -49,7 +51,6 @@ const supportedOS: OSAppknoxBinaryMap = {
         }
     },
 }
-
 
 /**
  * Gets proxy url set via ENV, fallbacks to agent proxy
@@ -158,7 +159,7 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     }
     const url = getAppknoxDownloadURL(os);
 
-    const tmpDir = 'binaries'
+    const tmpDir = 'binaries';
     const binpath = await makeDir(tmpDir);
     const tmpFile = path.join(binpath, supportedOS[os].name);
 
@@ -176,7 +177,6 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
 
     return supportedOS[os].path;
 }
-
 
 async function upload(filepath: string, riskThreshold: string) {
     tl.debug(`Filepath: ${filepath}`);
@@ -196,6 +196,8 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(filepath)
             .arg("--access-token")
             .arg(token)
+            .arg("--region")  // Use --region flag instead of host
+            .arg(region)       // Pass the region directly
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
 
@@ -213,6 +215,8 @@ async function upload(filepath: string, riskThreshold: string) {
             .arg(riskThreshold)
             .arg("--access-token")
             .arg(token)
+            .arg("--region")  // Use --region flag for API region
+            .arg(region)      // Pass the region directly
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
         return await checkCmd.exec(_execOptions);
@@ -222,4 +226,4 @@ async function upload(filepath: string, riskThreshold: string) {
     }
 }
 
-upload(filepath, riskThreshold)
+upload(filepath, riskThreshold);

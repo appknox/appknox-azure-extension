@@ -45,10 +45,22 @@
       },
       "required": false,
       "helpMarkDown": "Risk level for which build should fail"
+    },
+    {
+      "name": "region",
+      "type": "pickList",
+      "label": "Region",
+      "defaultValue": "global",
+      "options": {
+        "global": "Global",
+        "saudi": "Saudi"
+      },
+      "required": false,
+      "helpMarkDown": "Choose the Appknox Region"
     }
   ],
   "execution": {
-    "Node10": {
+    "Node": {
       "target": "index.js"
     }
   }
