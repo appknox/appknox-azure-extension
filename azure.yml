@@ -1,0 +1,5 @@
+- task: Appknox@2
+  inputs:
+    filePath: 'C:\Users\hirakdesai\Documents\GitHub\mfva\app\build\outputs\apk\debug\app-debug.apk'
+    accessToken: '944f67e341dface90e2d6d0aa656eeae30a45f8a'
+    riskThreshold: 'high'
