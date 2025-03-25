@@ -1,6 +1,9 @@
 trigger:
 - master
 
+pool:
+  name: 'Default'
+  
 steps:
 
 - task: Appknox@2
