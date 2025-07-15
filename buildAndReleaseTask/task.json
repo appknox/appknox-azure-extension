@@ -45,6 +45,14 @@
       },
       "required": false,
       "helpMarkDown": "Risk level for which build should fail"
+    },
+    {
+      "name": "host",
+      "type": "string",
+      "label": "Host URL",
+      "required": false,
+      "defaultValue": "",
+      "helpMarkDown": "Optional. Specify the host URL e.g., https://secure.appknox.com/. Leave blank to use the default."
     }
   ],
   "execution": {

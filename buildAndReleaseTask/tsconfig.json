@@ -6,7 +6,7 @@
       "noImplicitAny": false,
       "sourceMap": false,
       "resolveJsonModule": true,
-      "moduleResolution": "Node",
+      "moduleResolution": "Node"
   },
   "exclude": [
       "node_modules"
