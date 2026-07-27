@@ -47,6 +47,14 @@
       "helpMarkDown": "Risk level for which build should fail"
     },
     {
+      "name": "healthScoreThreshold",
+      "type": "string",
+      "label": "Health Score Threshold",
+      "required": false,
+      "defaultValue": "",
+      "helpMarkDown": "Optional. Health score threshold (0-100) to pass the command. Only one of riskThreshold or healthScoreThreshold can be provided."
+    },
+    {
       "name": "host",
       "type": "string",
       "label": "Host URL",

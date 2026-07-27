@@ -4,12 +4,13 @@ This extension adds the ability to perform automated app security testing for An
 ## Task Parameters
 Following are parameters needed for the task:
 
-| param           | required? | description                                                                                                 |
-|-----------------|:---------:|-------------------------------------------------------------------------------------------------------------|
-| `filePath`      |   true    | Path to APK/IPA binary file                                                                                 |
-| `accessToken`   |   true    | Appknox API Access Token                                                                                    |
-| `riskThreshold` |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low` |
-| `host`      |   false   | Specify the Appknox host url. Leave blank to use the default |
+| param                   | required? | description                                                                                                                                              |
+|-------------------------|:---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `filePath`              |   true    | Path to APK/IPA binary file                                                                                                                              |
+| `accessToken`           |   true    | Appknox API Access Token                                                                                                                                 |
+| `riskThreshold`         |   false   | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low`. Only one of this or `healthScoreThreshold` |
+| `healthScoreThreshold`  |   false   | Health score threshold (0-100) to pass the command. Only one of this or `riskThreshold` can be provided                                                  |
+| `host`                  |   false   | Specify the Appknox host url. Leave blank to use the default                                                                                             |
 
 ## Installation
 
@@ -80,4 +81,17 @@ steps:
     accessToken: '$(appknoxtoken)'
     riskThreshold: 'medium'
     host: 'https://secure.appknox.com/'
+```
+
+### Using Health Score Threshold
+```
+- task: appknox@2
+  inputs:
+    filepath: './app/build/outputs/apk/debug/app-debug.apk'
+    accessToken: '$(appknoxtoken)'
+    healthScoreThreshold: '70'
+    host: 'https://secure.appknox.com/'
+```
+
+**Note:** Only one of `riskThreshold` or `healthScoreThreshold` can be provided. If both are specified, the task will fail.
 ```

@@ -14,6 +14,7 @@ const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
 const filepath = tl.getInput('filePath', true) || "";
 const riskThreshold = tl.getInput('riskThreshold') || "low";
+const healthScoreThreshold = tl.getInput('healthScoreThreshold', false) || "";
 const host = tl.getInput('host', false) || "";
 
 interface AppknoxBinaryConfig {
@@ -176,9 +177,10 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     return supportedOS[os].path;
 }
 
-async function upload(filepath: string, riskThreshold: string) {
+async function upload(filepath: string, riskThreshold: string, healthScoreThreshold: string) {
     tl.debug(`Filepath: ${filepath}`);
     tl.debug(`Riskthreshold: ${riskThreshold}`);
+    tl.debug(`HealthScoreThreshold: ${healthScoreThreshold}`);
 
     const _execOptions = <trm.IExecOptions>{
         silent: false,
@@ -186,6 +188,21 @@ async function upload(filepath: string, riskThreshold: string) {
     }
 
     try {
+        const riskThresholdInput = tl.getInput('riskThreshold', false);
+        const hasRiskThreshold = !!riskThresholdInput;
+        const hasHealthScoreThreshold = !!healthScoreThreshold;
+
+        if (hasRiskThreshold && hasHealthScoreThreshold) {
+            throw new Error("Only one of riskThreshold or healthScoreThreshold can be provided");
+        }
+
+        if (healthScoreThreshold) {
+            const healthScore = parseInt(healthScoreThreshold, 10);
+            if (isNaN(healthScore) || healthScore < 0 || healthScore > 100) {
+                throw new Error("healthScoreThreshold must be between 0 and 100");
+            }
+        }
+
         const proxy = getProxyURL();
         const hasValidProxy = isValidURL(proxy);
         const appknoxPath = await installAppknox(os, proxy);
@@ -208,10 +225,17 @@ async function upload(filepath: string, riskThreshold: string) {
         tl.debug("File ID: " + fileID);
         const checkCmd: trm.ToolRunner = tl.tool(appknoxPath);
         checkCmd.arg("cicheck")
-            .arg(fileID)
-            .arg("--risk-threshold")
-            .arg(riskThreshold)
-            .arg("--access-token")
+            .arg(fileID);
+        
+        if (healthScoreThreshold) {
+            checkCmd.arg("--health-score-threshold")
+                .arg(healthScoreThreshold);
+        } else {
+            checkCmd.arg("--risk-threshold")
+                .arg(riskThreshold);
+        }
+        
+        checkCmd.arg("--access-token")
             .arg(token)
             .argIf(!!host, "--host")
             .argIf(!!host, host)
@@ -224,4 +248,4 @@ async function upload(filepath: string, riskThreshold: string) {
     }
 }
 
-upload(filepath, riskThreshold);
+upload(filepath, riskThreshold, healthScoreThreshold);
