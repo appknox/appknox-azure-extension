@@ -36,15 +36,16 @@
       "name": "riskThreshold",
       "type": "pickList",
       "label": "Risk Threshold",
-      "defaultValue": "low",
+      "defaultValue": "none",
       "options": {
+        "none": "None",
         "low": "Low",
         "medium": "Medium",
         "high": "High",
         "critical": "Critical"
       },
       "required": false,
-      "helpMarkDown": "Risk level for which build should fail"
+      "helpMarkDown": "Risk level for which build should fail. Select None to use Health Score Threshold instead."
     },
     {
       "name": "healthScoreThreshold",

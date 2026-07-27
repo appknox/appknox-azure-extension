@@ -189,7 +189,7 @@ async function upload(filepath: string, riskThreshold: string, healthScoreThresh
 
     try {
         const riskThresholdInput = tl.getInput('riskThreshold', false);
-        const hasRiskThreshold = !!riskThresholdInput;
+        const hasRiskThreshold = !!riskThresholdInput && riskThresholdInput !== 'none';
         const hasHealthScoreThreshold = !!healthScoreThreshold;
 
         if (hasRiskThreshold && hasHealthScoreThreshold) {
@@ -230,7 +230,7 @@ async function upload(filepath: string, riskThreshold: string, healthScoreThresh
         if (healthScoreThreshold) {
             checkCmd.arg("--health-score-threshold")
                 .arg(healthScoreThreshold);
-        } else {
+        } else if (hasRiskThreshold) {
             checkCmd.arg("--risk-threshold")
                 .arg(riskThreshold);
         }
