@@ -8,8 +8,9 @@ Following are parameters needed for the task:
 |-------------------------|:---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `filePath`              |   true    | Path to APK/IPA binary file                                                                                                                              |
 | `accessToken`           |   true    | Appknox API Access Token                                                                                                                                 |
-| `riskThreshold`         |   false   | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low`. Only one of this or `healthScoreThreshold` |
-| `healthScoreThreshold`  |   false   | Health score threshold (0-100) to pass the command. Only one of this or `riskThreshold` can be provided                                                  |
+| `thresholdType`         |   true    | Which threshold to enforce. `risk` requires `riskThreshold` to be set; `healthScore` requires `healthScoreThreshold` to be set. Defaults to `risk`       |
+| `riskThreshold`         |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Required when `thresholdType` is `risk`                        |
+| `healthScoreThreshold`  |   true    | Health score threshold (0-100) to pass the command. Required when `thresholdType` is `healthScore`                                                       |
 | `host`                  |   false   | Specify the Appknox host url. Leave blank to use the default                                                                                             |
 
 ## Installation
@@ -79,6 +80,7 @@ steps:
   inputs:
     filepath: './app/build/outputs/apk/debug/app-debug.apk'
     accessToken: '$(appknoxtoken)'
+    thresholdType: 'risk'
     riskThreshold: 'medium'
     host: 'https://secure.appknox.com/'
 ```
@@ -89,9 +91,10 @@ steps:
   inputs:
     filepath: './app/build/outputs/apk/debug/app-debug.apk'
     accessToken: '$(appknoxtoken)'
+    thresholdType: 'healthScore'
     healthScoreThreshold: '70'
     host: 'https://secure.appknox.com/'
 ```
 
-**Note:** Only one of `riskThreshold` or `healthScoreThreshold` can be provided. If both are specified, the task will fail.
+**Note:** `thresholdType` selects which threshold is enforced. Set it to `risk` and provide `riskThreshold`, or `healthScore` and provide `healthScoreThreshold`.
 ```

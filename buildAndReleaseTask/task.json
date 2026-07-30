@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-  "id": "d0f16a13-2e67-46b5-a4b4-72f5c2ddfa4c",
+  "id": "d0f16a13-2e67-46b5-a4b4-72f5c2ddfa4d",
   "name": "Appknox",
   "friendlyName": "Appknox",
   "description": "Appknox",
@@ -10,7 +10,7 @@
   "version": {
     "Major": 2,
     "Minor": 0,
-    "Patch": 13
+    "Patch": 16
   },
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
@@ -33,27 +33,40 @@
       "helpMarkDown": "Appknox API access token"
     },
     {
+      "name": "thresholdType",
+      "type": "pickList",
+      "label": "Threshold Type",
+      "defaultValue": "risk",
+      "options": {
+        "risk": "Risk Threshold",
+        "healthScore": "Health Score Threshold"
+      },
+      "required": true,
+      "helpMarkDown": "Choose whether the build should fail based on a Risk Threshold or a Health Score Threshold."
+    },
+    {
       "name": "riskThreshold",
       "type": "pickList",
       "label": "Risk Threshold",
-      "defaultValue": "none",
+      "defaultValue": "low",
       "options": {
-        "none": "None",
         "low": "Low",
         "medium": "Medium",
         "high": "High",
         "critical": "Critical"
       },
-      "required": false,
-      "helpMarkDown": "Risk level for which build should fail. Select None to use Health Score Threshold instead."
+      "required": true,
+      "visibleRule": "thresholdType = risk",
+      "helpMarkDown": "Risk level for which build should fail."
     },
     {
       "name": "healthScoreThreshold",
       "type": "string",
       "label": "Health Score Threshold",
-      "required": false,
+      "required": true,
       "defaultValue": "",
-      "helpMarkDown": "Optional. Health score threshold (0-100) to pass the command. Only one of riskThreshold or healthScoreThreshold can be provided."
+      "visibleRule": "thresholdType = healthScore",
+      "helpMarkDown": "Health score threshold (0-100) to pass the command."
     },
     {
       "name": "host",

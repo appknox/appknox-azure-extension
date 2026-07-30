@@ -13,8 +13,9 @@ const ProxyAgent = require('proxy-agent');
 const os = tl.getVariable('Agent.OS') || "";
 const token = tl.getInput('accessToken', true) || "";
 const filepath = tl.getInput('filePath', true) || "";
-const riskThreshold = tl.getInput('riskThreshold') || "low";
-const healthScoreThreshold = tl.getInput('healthScoreThreshold', false) || "";
+const thresholdType = tl.getInput('thresholdType', true) || "";
+const riskThreshold = thresholdType === 'risk' ? (tl.getInput('riskThreshold', true) || "") : "";
+const healthScoreThreshold = thresholdType === 'healthScore' ? (tl.getInput('healthScoreThreshold', true) || "") : "";
 const host = tl.getInput('host', false) || "";
 
 interface AppknoxBinaryConfig {
@@ -177,8 +178,9 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     return supportedOS[os].path;
 }
 
-async function upload(filepath: string, riskThreshold: string, healthScoreThreshold: string) {
+async function upload(filepath: string, thresholdType: string, riskThreshold: string, healthScoreThreshold: string) {
     tl.debug(`Filepath: ${filepath}`);
+    tl.debug(`ThresholdType: ${thresholdType}`);
     tl.debug(`Riskthreshold: ${riskThreshold}`);
     tl.debug(`HealthScoreThreshold: ${healthScoreThreshold}`);
 
@@ -188,15 +190,11 @@ async function upload(filepath: string, riskThreshold: string, healthScoreThresh
     }
 
     try {
-        const riskThresholdInput = tl.getInput('riskThreshold', false);
-        const hasRiskThreshold = !!riskThresholdInput && riskThresholdInput !== 'none';
-        const hasHealthScoreThreshold = !!healthScoreThreshold;
-
-        if (hasRiskThreshold && hasHealthScoreThreshold) {
-            throw new Error("Only one of riskThreshold or healthScoreThreshold can be provided");
+        if (thresholdType !== 'risk' && thresholdType !== 'healthScore') {
+            throw new Error(`Invalid thresholdType "${thresholdType}". Must be either "risk" or "healthScore".`);
         }
 
-        if (healthScoreThreshold) {
+        if (thresholdType === 'healthScore') {
             const healthScore = parseInt(healthScoreThreshold, 10);
             if (isNaN(healthScore) || healthScore < 0 || healthScore > 100) {
                 throw new Error("healthScoreThreshold must be between 0 and 100");
@@ -227,14 +225,14 @@ async function upload(filepath: string, riskThreshold: string, healthScoreThresh
         checkCmd.arg("cicheck")
             .arg(fileID);
         
-        if (healthScoreThreshold) {
+        if (thresholdType === 'healthScore') {
             checkCmd.arg("--health-score-threshold")
                 .arg(healthScoreThreshold);
-        } else if (hasRiskThreshold) {
+        } else {
             checkCmd.arg("--risk-threshold")
                 .arg(riskThreshold);
         }
-        
+
         checkCmd.arg("--access-token")
             .arg(token)
             .argIf(!!host, "--host")
@@ -248,4 +246,4 @@ async function upload(filepath: string, riskThreshold: string, healthScoreThresh
     }
 }
 
-upload(filepath, riskThreshold, healthScoreThreshold);
+upload(filepath, thresholdType, riskThreshold, healthScoreThreshold);
