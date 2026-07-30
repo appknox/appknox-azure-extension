@@ -4,12 +4,14 @@ This extension adds the ability to perform automated app security testing for An
 ## Task Parameters
 Following are parameters needed for the task:
 
-| param           | required? | description                                                                                                 |
-|-----------------|:---------:|-------------------------------------------------------------------------------------------------------------|
-| `filePath`      |   true    | Path to APK/IPA binary file                                                                                 |
-| `accessToken`   |   true    | Appknox API Access Token                                                                                    |
-| `riskThreshold` |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Defaults to `Low` |
-| `host`      |   false   | Specify the Appknox host url. Leave blank to use the default |
+| param                   | required? | description                                                                                                                                              |
+|-------------------------|:---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `filePath`              |   true    | Path to APK/IPA binary file                                                                                                                              |
+| `accessToken`           |   true    | Appknox API Access Token                                                                                                                                 |
+| `thresholdType`         |   true    | Which threshold to enforce. `risk` requires `riskThreshold` to be set; `healthScore` requires `healthScoreThreshold` to be set. Defaults to `risk`       |
+| `riskThreshold`         |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Required when `thresholdType` is `risk`                        |
+| `healthScoreThreshold`  |   true    | Health score threshold (0-100) to pass the command. Required when `thresholdType` is `healthScore`                                                       |
+| `host`                  |   false   | Specify the Appknox host url. Leave blank to use the default                                                                                             |
 
 ## Installation
 
@@ -78,6 +80,21 @@ steps:
   inputs:
     filepath: './app/build/outputs/apk/debug/app-debug.apk'
     accessToken: '$(appknoxtoken)'
+    thresholdType: 'risk'
     riskThreshold: 'medium'
     host: 'https://secure.appknox.com/'
+```
+
+### Using Health Score Threshold
+```
+- task: appknox@2
+  inputs:
+    filepath: './app/build/outputs/apk/debug/app-debug.apk'
+    accessToken: '$(appknoxtoken)'
+    thresholdType: 'healthScore'
+    healthScoreThreshold: '70'
+    host: 'https://secure.appknox.com/'
+```
+
+**Note:** `thresholdType` selects which threshold is enforced. Set it to `risk` and provide `riskThreshold`, or `healthScore` and provide `healthScoreThreshold`.
 ```
