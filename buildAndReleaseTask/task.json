@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-  "id": "d0f16a13-2e67-46b5-a4b4-72f5c2ddfa4d",
+  "id": "d0f16a13-2e67-46b5-a4b4-72f5c2ddfa4c",
   "name": "Appknox",
   "friendlyName": "Appknox",
   "description": "Appknox",
@@ -10,7 +10,7 @@
   "version": {
     "Major": 2,
     "Minor": 0,
-    "Patch": 16
+    "Patch": 17
   },
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
