@@ -10,7 +10,7 @@
   "version": {
     "Major": 2,
     "Minor": 0,
-    "Patch": 19
+    "Patch": 20
   },
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
@@ -75,6 +75,14 @@
       "required": false,
       "defaultValue": "",
       "helpMarkDown": "Optional. Specify the host URL e.g., https://api.appknox.com/. Leave blank to use the default."
+    },
+    {
+      "name": "generatePdfReport",
+      "type": "boolean",
+      "label": "Download PDF Report",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Optional. If enabled, the PDF report and its password file will be downloaded to reports/[file-id]/ in the working directory."
     },
     {
       "name": "triggerKnoxiq",

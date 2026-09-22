@@ -1,6 +1,6 @@
 {
   "name": "appknox",
-  "version": "2.0.19",
+  "version": "2.0.20",
   "binary": "1.8.8",
   "description": "Appknox azure extension for auto security testing",
   "main": "index.js",
