@@ -17,6 +17,7 @@ const thresholdType = tl.getInput('thresholdType', true) || "";
 const riskThreshold = thresholdType === 'risk' ? (tl.getInput('riskThreshold', true) || "") : "";
 const healthScoreThreshold = thresholdType === 'healthScore' ? (tl.getInput('healthScoreThreshold', true) || "") : "";
 const host = tl.getInput('host', false) || "";
+const triggerKnoxiq = tl.getBoolInput('triggerKnoxiq', false);
 
 interface AppknoxBinaryConfig {
     name: string,
@@ -178,11 +179,12 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     return supportedOS[os].path;
 }
 
-async function upload(filepath: string, thresholdType: string, riskThreshold: string, healthScoreThreshold: string) {
+async function upload(filepath: string, thresholdType: string, riskThreshold: string, healthScoreThreshold: string, triggerKnoxiq: boolean) {
     tl.debug(`Filepath: ${filepath}`);
     tl.debug(`ThresholdType: ${thresholdType}`);
     tl.debug(`Riskthreshold: ${riskThreshold}`);
     tl.debug(`HealthScoreThreshold: ${healthScoreThreshold}`);
+    tl.debug(`TriggerKnoxiq: ${triggerKnoxiq}`);
 
     const _execOptions = <trm.IExecOptions>{
         silent: false,
@@ -212,7 +214,8 @@ async function upload(filepath: string, thresholdType: string, riskThreshold: st
             .argIf(!!host, "--host")
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
-            .argIf(hasValidProxy, proxy);
+            .argIf(hasValidProxy, proxy)
+            .argIf(triggerKnoxiq, "--knoxiq");
 
         const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
         if (result.code != 0) {
@@ -246,4 +249,4 @@ async function upload(filepath: string, thresholdType: string, riskThreshold: st
     }
 }
 
-upload(filepath, thresholdType, riskThreshold, healthScoreThreshold);
+upload(filepath, thresholdType, riskThreshold, healthScoreThreshold, triggerKnoxiq);

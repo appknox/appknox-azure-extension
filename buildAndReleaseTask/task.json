@@ -10,7 +10,7 @@
   "version": {
     "Major": 2,
     "Minor": 0,
-    "Patch": 17
+    "Patch": 19
   },
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
@@ -75,6 +75,14 @@
       "required": false,
       "defaultValue": "",
       "helpMarkDown": "Optional. Specify the host URL e.g., https://api.appknox.com/. Leave blank to use the default."
+    },
+    {
+      "name": "triggerKnoxiq",
+      "type": "boolean",
+      "label": "Trigger KnoxIQ",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Optional. If enabled, KnoxIQ triage is requested during upload and its results are reflected by the CI check."
     }
   ],
   "execution": {
