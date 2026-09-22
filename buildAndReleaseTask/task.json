@@ -15,6 +15,13 @@
   "instanceNameFormat": "Appknox $(filePath)",
   "showEnvironmentVariables": false,
   "minimumAgentVersion": "2.182.1",
+  "groups": [
+    {
+      "name": "reportingOptions",
+      "displayName": "Reporting & KnoxIQ Options",
+      "isExpanded": true
+    }
+  ],
   "inputs": [
     {
       "name": "filePath",
@@ -82,6 +89,7 @@
       "label": "Download PDF Report",
       "defaultValue": "false",
       "required": false,
+      "groupName": "reportingOptions",
       "helpMarkDown": "Optional. If enabled, the PDF report and its password file will be downloaded to reports/[file-id]/ in the working directory and published as a pipeline artifact named 'reports'."
     },
     {
@@ -90,6 +98,7 @@
       "label": "Trigger KnoxIQ",
       "defaultValue": "false",
       "required": false,
+      "groupName": "reportingOptions",
       "helpMarkDown": "Optional. If enabled, KnoxIQ triage is requested during upload and its results are reflected by the CI check."
     }
   ],
