@@ -193,8 +193,6 @@ async function downloadPdfReport(appknoxPath: string, fileID: string, proxy: str
         createCmd.arg("reports")
             .arg("create")
             .arg(fileID)
-            .arg("--access-token")
-            .arg(token)
             .argIf(!!host, "--host")
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
@@ -213,8 +211,6 @@ async function downloadPdfReport(appknoxPath: string, fileID: string, proxy: str
             .arg("download")
             .arg("pdf")
             .arg(reportID)
-            .arg("--access-token")
-            .arg(token)
             .argIf(!!host, "--host")
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
@@ -234,9 +230,14 @@ async function upload() {
     tl.debug(`TriggerKnoxiq: ${triggerKnoxiq}`);
     tl.debug(`GeneratePdfReport: ${generatePdfReport}`);
 
+    // The access token goes through the environment, never as a CLI argument --
+    // ToolRunner echoes the full command line (including every literal
+    // argument) into the build log, which would otherwise leak the token in
+    // plain text regardless of whether the pipeline variable is marked secret.
     const _execOptions = <trm.IExecOptions>{
         silent: false,
         failOnStdErr: false,
+        env: { ...process.env, APPKNOX_ACCESS_TOKEN: token },
     }
 
     try {
@@ -257,8 +258,6 @@ async function upload() {
         const uploadCmd: trm.ToolRunner = tl.tool(appknoxPath);
         uploadCmd.arg("upload")
             .arg(filepath)
-            .arg("--access-token")
-            .arg(token)
             .argIf(!!host, "--host")
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
@@ -284,9 +283,7 @@ async function upload() {
                 .arg(riskThreshold);
         }
 
-        checkCmd.arg("--access-token")
-            .arg(token)
-            .argIf(!!host, "--host")
+        checkCmd.argIf(!!host, "--host")
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
