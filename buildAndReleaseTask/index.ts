@@ -217,6 +217,21 @@ async function downloadPdfReport(appknoxPath: string, fileID: string, proxy: str
             .argIf(hasValidProxy, proxy);
 
         await pdfCmd.exec(execOptions);
+
+        // The CLI writes to ./reports/{file_id}/ by default (no --output passed
+        // above). Publish both files as pipeline artifacts so they survive past
+        // the job -- otherwise they only exist on the agent's disk for the
+        // duration of the run and are unrecoverable afterward, especially on
+        // ephemeral Microsoft-hosted agents.
+        const reportDir = path.join('reports', fileID);
+        const pdfPath = path.join(reportDir, `report_${fileID}.pdf`);
+        const passwordPath = path.join(reportDir, `report_${fileID}_password.txt`);
+        if (fs.existsSync(pdfPath) && fs.existsSync(passwordPath)) {
+            tl.uploadArtifact('reports', pdfPath, `report_${fileID}.pdf`);
+            tl.uploadArtifact('reports', passwordPath, `report_${fileID}_password.txt`);
+        } else {
+            tl.warning(`PDF report downloaded but not found on disk at ${pdfPath}; skipping artifact publish.`);
+        }
     } catch(err) {
         tl.warning(`PDF report download failed: ${err.message}`);
     }

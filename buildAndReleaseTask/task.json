@@ -82,7 +82,7 @@
       "label": "Download PDF Report",
       "defaultValue": "false",
       "required": false,
-      "helpMarkDown": "Optional. If enabled, the PDF report and its password file will be downloaded to reports/[file-id]/ in the working directory."
+      "helpMarkDown": "Optional. If enabled, the PDF report and its password file will be downloaded to reports/[file-id]/ in the working directory and published as a pipeline artifact named 'reports'."
     },
     {
       "name": "triggerKnoxiq",
