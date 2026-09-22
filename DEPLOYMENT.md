@@ -3,6 +3,18 @@
 This covers how to build, test, and publish the Appknox Azure Pipelines extension,
 and how end users configure the task once it's installed.
 
+## Quick links
+
+| What | URL |
+|---|---|
+| Azure DevOps entry point — find/switch orgs, and where you actually install and run test pipelines | https://aex.dev.azure.com/ |
+| Generate a Marketplace-publish PAT (`appknox` org) | https://dev.azure.com/appknox/_usersSettings/tokens |
+| Manage the `appknox` Marketplace publisher & its extensions (versions, publish history, delete) | https://marketplace.visualstudio.com/manage/publishers/appknox |
+
+Note: `portal.azure.com` (the Azure Portal, for cloud resources like VMs/storage) is a
+**different product** from Azure DevOps (`dev.azure.com`, for Pipelines/Repos/extensions).
+Extensions and pipelines are never reachable from the Azure Portal.
+
 ## Extensions in play
 
 This repo publishes to **two separate Marketplace listings**, both built from the same
@@ -15,6 +27,7 @@ source. They have independent version histories — publishing one does not affe
 
 **Always test against `appknox-test` first**, then switch `id`/`name` in `vss-extension.json`
 to `Appknox` for the production publish.
+
 
 ---
 
@@ -30,7 +43,9 @@ to `Appknox` for the production publish.
 
 The token needs **Marketplace (Manage)** scope, not a regular Azure DevOps org-scoped token.
 
-1. Go to any Azure DevOps organization you're a member of, e.g. `https://dev.azure.com/<org>/_usersSettings/tokens`.
+1. Go to https://dev.azure.com/appknox/_usersSettings/tokens (or any other Azure DevOps
+   organization you're a member of — Marketplace PATs aren't scoped to a single org, see
+   step 3).
 2. Click **New Token**.
 3. Set:
    - **Name**: something identifiable, e.g. `appknox-extension-publish`
@@ -85,6 +100,18 @@ If it doesn't fail loudly (e.g. on a brand-new, never-published extension), it s
 orphans every existing pipeline that references the old GUID. **Never regenerate or
 hand-edit this value.** If you ever see a diff touching this line, stop and verify against
 the currently-live production `task.json` before proceeding.
+
+**Known drift on `appknox-test` (discovered Sept 2026):** the `appknox-test` listing's
+published history has the GUID `...fa4d`, one character off from the real, correct GUID
+`...fa4c` that's actually in this repo and live in production. It happened from
+alternating between two local copies during a rapid test-iteration session, and the wrong
+one ended up published last. `appknox-test` already has real installs in at least one org,
+so deleting and recreating the listing (which would let it pick up the correct GUID fresh)
+isn't an option. Until that listing is deliberately fixed, **any build published to
+`appknox-test` must use `...fa4d`**, not the real `...fa4c` — build it with the GUID
+temporarily hand-edited to `...fa4d` (never commit that edit), publish, then revert to
+`...fa4c` before committing anything else. Production (`Appknox`) is unaffected and must
+always use the correct `...fa4c`.
 
 ### 2. Version numbers — not all three files carry the same weight
 
@@ -149,8 +176,10 @@ Confirm the GUID matches the one above and the patch number matches what you int
    ```bash
    tfx extension publish --vsix <file>.vsix --publisher appknox --token $TFX_TOKEN --share-with <your-test-org>
    ```
-4. Install/update it in the test org, add the `Appknox` task to a real pipeline, and
-   exercise both `thresholdType: risk` and `thresholdType: healthScore` paths.
+4. Install/update it in the test org — find/access your Azure DevOps orgs at
+   https://aex.dev.azure.com/ — add the `Appknox` task to a real pipeline, and exercise
+   both `thresholdType: risk` and `thresholdType: healthScore` paths (and any other inputs
+   the current change touches, e.g. `triggerKnoxiq`, `generatePdfReport`).
 5. Only once verified, switch `id`/`name` back to `Appknox` (production), bump the version
    again to a number higher than whatever's currently live, rebuild, and publish.
 
@@ -228,6 +257,6 @@ exactly as before.
 |---|---|---|
 | `error: unknown flag: --health-score-threshold` | The downloaded `appknox-go` CLI version (`binary` field) predates that flag | Bump `buildAndReleaseTask/package.json` → `binary` to a CLI version that supports it |
 | `Version number must increase each time an extension is published` | One of the three version fields wasn't bumped, or a prior failed publish already consumed that version number | Bump all three version fields together, even past a version that "should" be free |
-| `Task ID mismatch between extension versions` | `task.json`'s `"id"` GUID doesn't match a previously published version | Restore the GUID exactly — never regenerate it |
+| `Task ID mismatch between extension versions` | `task.json`'s `"id"` GUID doesn't match a previously published version | For `Appknox` (production): restore the correct GUID exactly, never regenerate it. For `appknox-test`: see "Known drift on `appknox-test`" above — that listing currently expects the *wrong* GUID |
 | Pipeline runs an old plugin version despite publishing a new one | Marketplace validation delay, or the org hasn't pulled the update yet | Check Organization Settings → Extensions for "Installed version"; allow time, or reinstall to force a refresh |
 | `Only one of riskThreshold or healthScoreThreshold can be provided` still shows even though the field is hidden in the UI | `visibleRule` only hides a field in the designer — it doesn't clear a previously-typed value | Re-check the actual `thresholdType` selection; this was superseded by the mandatory `thresholdType` selector, which makes the conflict structurally impossible |
