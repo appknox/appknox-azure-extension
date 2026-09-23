@@ -231,8 +231,15 @@ async function downloadPdfReport(appknoxPath: string, fileID: string, proxy: str
             // the agent process (not this task's own process) resolves the path
             // against, so a relative path here fails with "Path does not exist"
             // even though fs.existsSync above just confirmed the file is there.
-            tl.uploadArtifact('reports', path.resolve(pdfPath), `report_${fileID}.pdf`);
-            tl.uploadArtifact('reports', path.resolve(passwordPath), `report_${fileID}_password.txt`);
+            //
+            // The third argument is the published ARTIFACT's name, not a
+            // per-file display name -- both calls must use the same value
+            // ('reports') so the two files land in one artifact instead of
+            // two separate ones that each end up pointing at the same
+            // underlying container folder and so appear to duplicate
+            // each other's contents.
+            tl.uploadArtifact('reports', path.resolve(pdfPath), 'reports');
+            tl.uploadArtifact('reports', path.resolve(passwordPath), 'reports');
         } else {
             tl.warning(`PDF report downloaded but not found on disk at ${pdfPath}; skipping artifact publish.`);
         }
