@@ -218,26 +218,16 @@ async function downloadPdfReport(appknoxPath: string, fileID: string, proxy: str
 
         await pdfCmd.exec(execOptions);
 
-        // The CLI writes to ./reports/{file_id}/ by default (no --output passed
-        // above). Publish both files as pipeline artifacts so they survive past
-        // the job -- otherwise they only exist on the agent's disk for the
-        // duration of the run and are unrecoverable afterward, especially on
-        // ephemeral Microsoft-hosted agents.
+        // No --output passed above, so the CLI wrote to ./reports/{file_id}/.
+        // Publish as an artifact or it's gone with the agent when the job ends.
         const reportDir = path.join('reports', fileID);
         const pdfPath = path.join(reportDir, `report_${fileID}.pdf`);
         const passwordPath = path.join(reportDir, `report_${fileID}_password.txt`);
         if (fs.existsSync(pdfPath) && fs.existsSync(passwordPath)) {
-            // uploadArtifact emits a ##vso[artifact.upload] logging command that
-            // the agent process (not this task's own process) resolves the path
-            // against, so a relative path here fails with "Path does not exist"
-            // even though fs.existsSync above just confirmed the file is there.
-            //
-            // The third argument is the published ARTIFACT's name, not a
-            // per-file display name -- both calls must use the same value
-            // ('reports') so the two files land in one artifact instead of
-            // two separate ones that each end up pointing at the same
-            // underlying container folder and so appear to duplicate
-            // each other's contents.
+            // uploadArtifact needs an absolute path (the agent resolves it, not
+            // this process) and the same artifact name on both calls (it's the
+            // published artifact's name, not a per-file label -- different
+            // names would create two artifacts instead of one).
             tl.uploadArtifact('reports', path.resolve(pdfPath), 'reports');
             tl.uploadArtifact('reports', path.resolve(passwordPath), 'reports');
         } else {
