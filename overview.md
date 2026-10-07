@@ -99,7 +99,6 @@ steps:
 ```
 
 **Note:** `thresholdType` selects which threshold is enforced. Set it to `risk` and provide `riskThreshold`, or `healthScore` and provide `healthScoreThreshold`.
-```
 
 ### Requesting KnoxIQ Triage
 ```
