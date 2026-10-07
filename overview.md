@@ -12,6 +12,8 @@ Following are parameters needed for the task:
 | `riskThreshold`         |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Required when `thresholdType` is `risk`                        |
 | `healthScoreThreshold`  |   true    | Health score threshold (0-100) to pass the command. Required when `thresholdType` is `healthScore`                                                       |
 | `host`                  |   false   | Specify the Appknox host url. Leave blank to use the default                                                                                             |
+| `generatePdfReport`     |   false   | If enabled, the PDF report and its password file will be downloaded to reports/[file-id]/ in the working directory and published as a pipeline artifact named `reports`. Defaults to `false` |
+| `triggerKnoxiq`         |   false   | If enabled, KnoxIQ triage is requested during upload and its results are reflected by the CI check. Defaults to `false`                                   |
 
 ## Installation
 
@@ -98,3 +100,28 @@ steps:
 
 **Note:** `thresholdType` selects which threshold is enforced. Set it to `risk` and provide `riskThreshold`, or `healthScore` and provide `healthScoreThreshold`.
 ```
+
+### Requesting KnoxIQ Triage
+```
+- task: appknox@2
+  inputs:
+    filepath: './app/build/outputs/apk/debug/app-debug.apk'
+    accessToken: '$(appknoxtoken)'
+    thresholdType: 'risk'
+    riskThreshold: 'medium'
+    host: 'https://secure.appknox.com/'
+    triggerKnoxiq: true
+```
+
+### Downloading a PDF Report
+```
+- task: appknox@2
+  inputs:
+    filepath: './app/build/outputs/apk/debug/app-debug.apk'
+    accessToken: '$(appknoxtoken)'
+    thresholdType: 'risk'
+    riskThreshold: 'medium'
+    host: 'https://secure.appknox.com/'
+    generatePdfReport: true
+```
+

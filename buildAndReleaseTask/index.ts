@@ -17,6 +17,8 @@ const thresholdType = tl.getInput('thresholdType', true) || "";
 const riskThreshold = thresholdType === 'risk' ? (tl.getInput('riskThreshold', true) || "") : "";
 const healthScoreThreshold = thresholdType === 'healthScore' ? (tl.getInput('healthScoreThreshold', true) || "") : "";
 const host = tl.getInput('host', false) || "";
+const generatePdfReport = tl.getBoolInput('generatePdfReport', false);
+const triggerKnoxiq = tl.getBoolInput('triggerKnoxiq', false);
 
 interface AppknoxBinaryConfig {
     name: string,
@@ -178,15 +180,80 @@ async function installAppknox(os: string, proxy: string): Promise<string> {
     return supportedOS[os].path;
 }
 
-async function upload(filepath: string, thresholdType: string, riskThreshold: string, healthScoreThreshold: string) {
+/**
+ * Creates a report for the file and downloads the PDF (with its password
+ * file) to the CLI's default ./reports/{file_id}/ directory. Failures are
+ * reported as task warnings rather than failing the whole task, matching
+ * the Jenkins plugin's behaviour: a report-download hiccup shouldn't fail
+ * an otherwise-passing security check.
+ */
+async function downloadPdfReport(appknoxPath: string, fileID: string, proxy: string, hasValidProxy: boolean, execOptions: trm.IExecOptions) {
+    try {
+        const createCmd: trm.ToolRunner = tl.tool(appknoxPath);
+        createCmd.arg("reports")
+            .arg("create")
+            .arg(fileID)
+            .argIf(!!host, "--host")
+            .argIf(!!host, host)
+            .argIf(hasValidProxy, "--proxy")
+            .argIf(hasValidProxy, proxy);
+
+        const createResult: trm.IExecSyncResult = createCmd.execSync(execOptions);
+        const reportID = createResult.stdout.trim();
+        if (createResult.code != 0 || !reportID || isNaN(parseInt(reportID, 10))) {
+            tl.warning(`Could not create report for PDF download: ${createResult.stderr || "no report ID returned"}`);
+            return;
+        }
+        tl.debug("Report ID: " + reportID);
+
+        const pdfCmd: trm.ToolRunner = tl.tool(appknoxPath);
+        pdfCmd.arg("reports")
+            .arg("download")
+            .arg("pdf")
+            .arg(reportID)
+            .argIf(!!host, "--host")
+            .argIf(!!host, host)
+            .argIf(hasValidProxy, "--proxy")
+            .argIf(hasValidProxy, proxy);
+
+        await pdfCmd.exec(execOptions);
+
+        // No --output passed above, so the CLI wrote to ./reports/{file_id}/.
+        // Publish as an artifact or it's gone with the agent when the job ends.
+        const reportDir = path.join('reports', fileID);
+        const pdfPath = path.join(reportDir, `report_${fileID}.pdf`);
+        const passwordPath = path.join(reportDir, `report_${fileID}_password.txt`);
+        if (fs.existsSync(pdfPath) && fs.existsSync(passwordPath)) {
+            // uploadArtifact needs an absolute path (the agent resolves it, not
+            // this process) and the same artifact name on both calls (it's the
+            // published artifact's name, not a per-file label -- different
+            // names would create two artifacts instead of one).
+            tl.uploadArtifact('reports', path.resolve(pdfPath), 'reports');
+            tl.uploadArtifact('reports', path.resolve(passwordPath), 'reports');
+        } else {
+            tl.warning(`PDF report downloaded but not found on disk at ${pdfPath}; skipping artifact publish.`);
+        }
+    } catch(err) {
+        tl.warning(`PDF report download failed: ${err.message}`);
+    }
+}
+
+async function upload() {
     tl.debug(`Filepath: ${filepath}`);
     tl.debug(`ThresholdType: ${thresholdType}`);
     tl.debug(`Riskthreshold: ${riskThreshold}`);
     tl.debug(`HealthScoreThreshold: ${healthScoreThreshold}`);
+    tl.debug(`TriggerKnoxiq: ${triggerKnoxiq}`);
+    tl.debug(`GeneratePdfReport: ${generatePdfReport}`);
 
+    // The access token goes through the environment, never as a CLI argument --
+    // ToolRunner echoes the full command line (including every literal
+    // argument) into the build log, which would otherwise leak the token in
+    // plain text regardless of whether the pipeline variable is marked secret.
     const _execOptions = <trm.IExecOptions>{
         silent: false,
         failOnStdErr: false,
+        env: { ...process.env, APPKNOX_ACCESS_TOKEN: token },
     }
 
     try {
@@ -207,12 +274,11 @@ async function upload(filepath: string, thresholdType: string, riskThreshold: st
         const uploadCmd: trm.ToolRunner = tl.tool(appknoxPath);
         uploadCmd.arg("upload")
             .arg(filepath)
-            .arg("--access-token")
-            .arg(token)
             .argIf(!!host, "--host")
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
-            .argIf(hasValidProxy, proxy);
+            .argIf(hasValidProxy, proxy)
+            .argIf(triggerKnoxiq, "--knoxiq");
 
         const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
         if (result.code != 0) {
@@ -233,17 +299,29 @@ async function upload(filepath: string, thresholdType: string, riskThreshold: st
                 .arg(riskThreshold);
         }
 
-        checkCmd.arg("--access-token")
-            .arg(token)
-            .argIf(!!host, "--host")
+        checkCmd.argIf(!!host, "--host")
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy);
-        return await checkCmd.exec(_execOptions);
+
+        let ciCheckError: any = null;
+        try {
+            await checkCmd.exec(_execOptions);
+        } catch(err) {
+            ciCheckError = err;
+        }
+
+        if (generatePdfReport) {
+            await downloadPdfReport(appknoxPath, fileID, proxy, hasValidProxy, _execOptions);
+        }
+
+        if (ciCheckError) {
+            throw ciCheckError;
+        }
 
     } catch(err) {
         tl.setResult(tl.TaskResult.Failed, err.message);
     }
 }
 
-upload(filepath, thresholdType, riskThreshold, healthScoreThreshold);
+upload();
