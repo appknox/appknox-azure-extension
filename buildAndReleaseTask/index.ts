@@ -16,7 +16,6 @@ const filepath = tl.getInput('filePath', true) || "";
 const thresholdType = tl.getInput('thresholdType', true) || "";
 const riskThreshold = thresholdType === 'risk' ? (tl.getInput('riskThreshold', true) || "") : "";
 const healthScoreThreshold = thresholdType === 'healthScore' ? (tl.getInput('healthScoreThreshold', true) || "") : "";
-const exploitLikelihoodThreshold = thresholdType === 'exploitLikelihood' ? (tl.getInput('exploitLikelihoodThreshold', true) || "") : "";
 const host = tl.getInput('host', false) || "";
 const generatePdfReport = tl.getBoolInput('generatePdfReport', false);
 const triggerKnoxiq = tl.getBoolInput('triggerKnoxiq', false);
@@ -244,7 +243,6 @@ async function upload() {
     tl.debug(`ThresholdType: ${thresholdType}`);
     tl.debug(`Riskthreshold: ${riskThreshold}`);
     tl.debug(`HealthScoreThreshold: ${healthScoreThreshold}`);
-    tl.debug(`ExploitLikelihoodThreshold: ${exploitLikelihoodThreshold}`);
     tl.debug(`TriggerKnoxiq: ${triggerKnoxiq}`);
     tl.debug(`GeneratePdfReport: ${generatePdfReport}`);
 
@@ -259,8 +257,8 @@ async function upload() {
     }
 
     try {
-        if (thresholdType !== 'risk' && thresholdType !== 'healthScore' && thresholdType !== 'exploitLikelihood') {
-            throw new Error(`Invalid thresholdType "${thresholdType}". Must be "risk", "healthScore", or "exploitLikelihood".`);
+        if (thresholdType !== 'risk' && thresholdType !== 'healthScore') {
+            throw new Error(`Invalid thresholdType "${thresholdType}". Must be either "risk" or "healthScore".`);
         }
 
         if (thresholdType === 'healthScore') {
@@ -270,20 +268,9 @@ async function upload() {
             }
         }
 
-        if (thresholdType === 'exploitLikelihood' &&
-            exploitLikelihoodThreshold !== 'low' && exploitLikelihoodThreshold !== 'medium' && exploitLikelihoodThreshold !== 'high') {
-            throw new Error(`Invalid exploitLikelihoodThreshold "${exploitLikelihoodThreshold}". Must be "low", "medium", or "high".`);
-        }
-
         const proxy = getProxyURL();
         const hasValidProxy = isValidURL(proxy);
         const appknoxPath = await installAppknox(os, proxy);
-        // Exploit-likelihood gating only works against KnoxIQ-triaged results, so
-        // it forces --knoxiq regardless of the triggerKnoxiq input's value. The
-        // classic designer UI has no way to grey out one input based on another's
-        // value (no disabledRule in the task schema), so the checkbox stays plain
-        // and editable even in this mode -- this code path is the real guarantee.
-        const knoxiqRequired = triggerKnoxiq || thresholdType === 'exploitLikelihood';
         const uploadCmd: trm.ToolRunner = tl.tool(appknoxPath);
         uploadCmd.arg("upload")
             .arg(filepath)
@@ -291,7 +278,7 @@ async function upload() {
             .argIf(!!host, host)
             .argIf(hasValidProxy, "--proxy")
             .argIf(hasValidProxy, proxy)
-            .argIf(knoxiqRequired, "--knoxiq");
+            .argIf(triggerKnoxiq, "--knoxiq");
 
         const result: trm.IExecSyncResult = uploadCmd.execSync(_execOptions);
         if (result.code != 0) {
@@ -307,9 +294,6 @@ async function upload() {
         if (thresholdType === 'healthScore') {
             checkCmd.arg("--health-score-threshold")
                 .arg(healthScoreThreshold);
-        } else if (thresholdType === 'exploitLikelihood') {
-            checkCmd.arg("--exploit-likelihood-threshold")
-                .arg(exploitLikelihoodThreshold);
         } else {
             checkCmd.arg("--risk-threshold")
                 .arg(riskThreshold);

@@ -4,7 +4,7 @@
   "description": "Appknox azure pipeline extension for auto security testing",
   "main": "index.js",
   "scripts": {
-    "tsbuild": "cd buildAndReleaseTask && npm run compile && npm prune --production",
+    "tsbuild": "cd buildAndReleaseTask && npm run compile",
     "tfxcreate": "tfx extension create --manifests vss-extension.json",
     "tfxpublish": "npm run compile && tfx extension publish --manifest vss-extension.json -t ${TFX_TOKEN}",
     "compile": "npm run tsbuild && npm run tfxcreate",
