@@ -9,7 +9,7 @@
   "author": "Appknox",
   "version": {
     "Major": 2,
-    "Minor": 1,
+    "Minor": 2,
     "Patch": 0
   },
   "instanceNameFormat": "Appknox $(filePath)",
@@ -46,10 +46,11 @@
       "defaultValue": "risk",
       "options": {
         "risk": "Risk Threshold",
-        "healthScore": "Health Score Threshold"
+        "healthScore": "Health Score Threshold",
+        "exploitLikelihood": "Exploit Likelihood Threshold"
       },
       "required": true,
-      "helpMarkDown": "Choose whether the build should fail based on a Risk Threshold or a Health Score Threshold."
+      "helpMarkDown": "Choose whether the build should fail based on a Risk Threshold, a Health Score Threshold, or a KnoxIQ Exploit Likelihood Threshold. Exploit Likelihood automatically requests KnoxIQ triage during upload regardless of the Trigger KnoxIQ setting below."
     },
     {
       "name": "riskThreshold",
@@ -76,6 +77,20 @@
       "helpMarkDown": "Health score threshold (0-100) to pass the command."
     },
     {
+      "name": "exploitLikelihoodThreshold",
+      "type": "pickList",
+      "label": "Exploit Likelihood Threshold",
+      "defaultValue": "low",
+      "options": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "required": true,
+      "visibleRule": "thresholdType = exploitLikelihood",
+      "helpMarkDown": "Minimum KnoxIQ exploit-likelihood level for which the build should fail, based on real-world exploitability rather than raw CVSS severity. Requires KnoxIQ triage to complete for the uploaded file."
+    },
+    {
       "name": "host",
       "type": "string",
       "label": "Host URL",
@@ -99,7 +114,7 @@
       "defaultValue": "false",
       "required": false,
       "groupName": "reportingOptions",
-      "helpMarkDown": "Optional. If enabled, KnoxIQ triage is requested during upload and its results are reflected by the CI check."
+      "helpMarkDown": "Optional. If enabled, KnoxIQ triage is requested during upload and its results are reflected by the CI check. Always requested automatically when Threshold Type is Exploit Likelihood Threshold, regardless of this checkbox's value -- that gate only works against KnoxIQ-triaged results."
     }
   ],
   "execution": {

@@ -8,12 +8,13 @@ Following are parameters needed for the task:
 |-------------------------|:---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `filePath`              |   true    | Path to APK/IPA binary file                                                                                                                              |
 | `accessToken`           |   true    | Appknox API Access Token                                                                                                                                 |
-| `thresholdType`         |   true    | Which threshold to enforce. `risk` requires `riskThreshold` to be set; `healthScore` requires `healthScoreThreshold` to be set. Defaults to `risk`       |
+| `thresholdType`         |   true    | Which threshold to enforce. `risk` requires `riskThreshold`; `healthScore` requires `healthScoreThreshold`; `exploitLikelihood` requires `exploitLikelihoodThreshold`. Defaults to `risk`       |
 | `riskThreshold`         |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Required when `thresholdType` is `risk`                        |
 | `healthScoreThreshold`  |   true    | Health score threshold (0-100) to pass the command. Required when `thresholdType` is `healthScore`                                                       |
+| `exploitLikelihoodThreshold` |   true    | Minimum KnoxIQ exploit-likelihood level for which the build should fail, based on real-world exploitability rather than raw CVSS severity. Available options are: `Low`, `Medium`, `High`. Required when `thresholdType` is `exploitLikelihood`. Automatically requests KnoxIQ triage during upload regardless of `triggerKnoxiq` -- this gate only works against triaged results |
 | `host`                  |   false   | Specify the Appknox host url. Leave blank to use the default                                                                                             |
 | `generatePdfReport`     |   false   | If enabled, the PDF report and its password file will be downloaded to reports/[file-id]/ in the working directory and published as a pipeline artifact named `reports`. Defaults to `false` |
-| `triggerKnoxiq`         |   false   | If enabled, KnoxIQ triage is requested during upload and its results are reflected by the CI check. Defaults to `false`                                   |
+| `triggerKnoxiq`         |   false   | If enabled, KnoxIQ triage is requested during upload and its results are reflected by the CI check. Forced on automatically when `thresholdType` is `exploitLikelihood`. Defaults to `false`                                   |
 
 ## Installation
 
@@ -98,7 +99,20 @@ steps:
     host: 'https://secure.appknox.com/'
 ```
 
-**Note:** `thresholdType` selects which threshold is enforced. Set it to `risk` and provide `riskThreshold`, or `healthScore` and provide `healthScoreThreshold`.
+**Note:** `thresholdType` selects which threshold is enforced. Set it to `risk` and provide `riskThreshold`, `healthScore` and provide `healthScoreThreshold`, or `exploitLikelihood` and provide `exploitLikelihoodThreshold`.
+
+### Using Exploit Likelihood Threshold
+```
+- task: appknox@2
+  inputs:
+    filepath: './app/build/outputs/apk/debug/app-debug.apk'
+    accessToken: '$(appknoxtoken)'
+    thresholdType: 'exploitLikelihood'
+    exploitLikelihoodThreshold: 'high'
+    host: 'https://secure.appknox.com/'
+```
+
+**Note:** Exploit Likelihood gates on KnoxIQ's real-world exploitability assessment instead of raw CVSS risk. It requires KnoxIQ triage to complete for the uploaded file, so `--knoxiq` is always passed on upload when this threshold type is selected -- `triggerKnoxiq` is ignored in this mode regardless of its checkbox value (the classic designer UI does not grey it out, since Azure Pipelines tasks have no declarative way to disable one input based on another's value -- this is enforced in code, not the UI). If KnoxIQ triage is unavailable or does not complete in time, the task falls back to a risk check at `LOW` -- any Low-or-higher finding fails the build, regardless of which Exploit Likelihood level was configured. Check the pipeline logs for which gate actually ran.
 
 ### Requesting KnoxIQ Triage
 ```
