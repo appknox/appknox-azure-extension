@@ -20,7 +20,7 @@ Finally, run
 ## Build
 
 ```
-  cd buildAndReleaseTask && npm install && tsc;cd .. && tfx extension create --rev-version --manifest-globs vss-extension.json
+  cd buildAndReleaseTask && npm install && tsc && npm prune --production;cd .. && tfx extension create --rev-version --manifest-globs vss-extension.json
 ```
 
 Then upload extension (vsix) to https://marketplace.visualstudio.com/manage/publishers/appknox
