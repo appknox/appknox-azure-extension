@@ -51,6 +51,16 @@ The above task will upload the binary which will initiate Appknox automated scan
 
 ![](images/logs.png)
 
+When KnoxIQ triage is enabled (`triggerKnoxiq`, or automatically when `thresholdType` is `exploitLikelihood`), it runs (`Started` → `In progress` → `Completed`) before the gate is evaluated, so each finding is checked against the configured gate using its real-world exploit likelihood rather than raw CVSS severity. Findings KnoxIQ couldn't triage (exploit likelihood "Unknown") are flagged as "needs review" and excluded from the build decision — full details are available on the Appknox dashboard.
+
+**Example — build fails:** the gate is `exploit likelihood >= Low`, and 20 findings meet or exceed it, so the build fails. One additional finding is "needs review" and does not affect the outcome either way.
+
+![](images/console-vulnerability-summary.png)
+
+**Example — build passes:** the gate is `risk >= Critical`, and the only finding is "needs review" (exploit likelihood "Unknown"), so it's excluded from the decision — nothing breaches the gate and the build passes.
+
+![](images/exploit-threshold-log.png)
+
 ---
 
 ## Examples
