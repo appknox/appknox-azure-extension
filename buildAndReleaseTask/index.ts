@@ -11,7 +11,9 @@ const needle = require('needle');
 const ProxyAgent = require('proxy-agent');
 
 const os = tl.getVariable('Agent.OS') || "";
-const token = tl.getInput('accessToken', true) || "";
+const token = tl.getInput('accessToken', false) || "";
+const accessKeyId = tl.getInput('accessKeyId', false) || "";
+const accessKeySecret = tl.getInput('accessKeySecret', false) || "";
 const filepath = tl.getInput('filePath', true) || "";
 const thresholdType = tl.getInput('thresholdType', true) || "";
 const riskThreshold = thresholdType === 'risk' ? (tl.getInput('riskThreshold', true) || "") : "";
@@ -104,6 +106,36 @@ function isValidURL(url_input: string): boolean {
     }
 
     return false;
+}
+
+/**
+ * Resolves the Appknox auth env vars from the task's accessToken/accessKeyId/
+ * accessKeySecret inputs. Exactly one of (accessToken) or (accessKeyId +
+ * accessKeySecret) must be provided, mirroring appknox-go's own PAT/Service
+ * Account validation.
+ * @returns env vars to merge into the appknox CLI's process environment
+ */
+function resolveCredentialEnv(accessToken: string, keyId: string, keySecret: string): { [key: string]: string } {
+    const hasToken = !!accessToken;
+    const hasServiceAccount = !!keyId && !!keySecret;
+
+    if (hasToken && hasServiceAccount) {
+        throw new Error("Provide either an Access Token or a Service Account (Access Key ID + Access Key Secret), not both.");
+    }
+
+    if (!hasToken && !keyId && !keySecret) {
+        throw new Error("Appknox credentials missing: provide an Access Token or a Service Account (Access Key ID + Access Key Secret).");
+    }
+
+    if (!hasToken && (!!keyId !== !!keySecret)) {
+        throw new Error("Service Account requires both Access Key ID and Access Key Secret.");
+    }
+
+    if (hasServiceAccount) {
+        return { APPKNOX_ACCESS_KEY_ID: keyId, APPKNOX_ACCESS_KEY_SECRET: keySecret };
+    }
+
+    return { APPKNOX_ACCESS_TOKEN: accessToken };
 }
 
 /**
@@ -248,17 +280,18 @@ async function upload() {
     tl.debug(`TriggerKnoxiq: ${triggerKnoxiq}`);
     tl.debug(`GeneratePdfReport: ${generatePdfReport}`);
 
-    // The access token goes through the environment, never as a CLI argument --
-    // ToolRunner echoes the full command line (including every literal
-    // argument) into the build log, which would otherwise leak the token in
-    // plain text regardless of whether the pipeline variable is marked secret.
-    const _execOptions = <trm.IExecOptions>{
-        silent: false,
-        failOnStdErr: false,
-        env: { ...process.env, APPKNOX_ACCESS_TOKEN: token },
-    }
-
     try {
+        // The credentials go through the environment, never as a CLI argument --
+        // ToolRunner echoes the full command line (including every literal
+        // argument) into the build log, which would otherwise leak them in
+        // plain text regardless of whether the pipeline variable is marked secret.
+        const credentialEnv = resolveCredentialEnv(token, accessKeyId, accessKeySecret);
+        const _execOptions = <trm.IExecOptions>{
+            silent: false,
+            failOnStdErr: false,
+            env: { ...process.env, ...credentialEnv },
+        }
+
         if (thresholdType !== 'risk' && thresholdType !== 'healthScore' && thresholdType !== 'exploitLikelihood') {
             throw new Error(`Invalid thresholdType "${thresholdType}". Must be "risk", "healthScore", or "exploitLikelihood".`);
         }

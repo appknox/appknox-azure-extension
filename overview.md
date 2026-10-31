@@ -7,7 +7,9 @@ Following are parameters needed for the task:
 | param                   | required? | description                                                                                                                                              |
 |-------------------------|:---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `filePath`              |   true    | Path to APK/IPA binary file                                                                                                                              |
-| `accessToken`           |   true    | Appknox API Access Token                                                                                                                                 |
+| `accessToken`           |   false   | Appknox Personal Access Token (PAT). Exactly one of `accessToken` or a Service Account (`accessKeyId` + `accessKeySecret`) is required                   |
+| `accessKeyId`           |   false   | Appknox Service Account Access Key ID. Must be provided together with `accessKeySecret`, as an alternative to `accessToken`                              |
+| `accessKeySecret`       |   false   | Appknox Service Account Access Key Secret. Must be provided together with `accessKeyId`, as an alternative to `accessToken`                              |
 | `thresholdType`         |   true    | Which threshold to enforce. `risk` requires `riskThreshold`; `healthScore` requires `healthScoreThreshold`; `exploitLikelihood` requires `exploitLikelihoodThreshold`. Defaults to `risk`       |
 | `riskThreshold`         |   true    | Risk level to fail the build. Available options are: `Low`, `Medium`, `High`, `Critical`. Required when `thresholdType` is `risk`                        |
 | `healthScoreThreshold`  |   true    | Health score threshold (0-100) to pass the command. Required when `thresholdType` is `healthScore`                                                       |
@@ -36,7 +38,7 @@ Following are parameters needed for the task:
 
     ![](images/basic-config.png)
 
-3. `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab.
+3. `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab. Use `accessToken` for a Personal Access Token, or `accessKeyId` + `accessKeySecret` for a Service Account (created by an organization owner or admin from the Appknox dashboard) -- provide exactly one of the two.
 
     ![](images/variable.png)
 
@@ -110,6 +112,20 @@ steps:
 ```
 
 **Note:** `thresholdType` selects which threshold is enforced. Set it to `risk` and provide `riskThreshold`, `healthScore` and provide `healthScoreThreshold`, or `exploitLikelihood` and provide `exploitLikelihoodThreshold`.
+
+### Using a Service Account instead of an Access Token
+```
+- task: appknox@2
+  inputs:
+    filepath: './app/build/outputs/apk/debug/app-debug.apk'
+    accessKeyId: '$(appknoxaccesskeyid)'
+    accessKeySecret: '$(appknoxaccesskeysecret)'
+    thresholdType: 'risk'
+    riskThreshold: 'medium'
+    host: 'https://secure.appknox.com/'
+```
+
+**Note:** Provide exactly one of `accessToken` or the `accessKeyId`/`accessKeySecret` pair -- providing both, only one of the pair, or neither fails the task with a validation error before any scan is attempted.
 
 ### Using Exploit Likelihood Threshold
 ```
