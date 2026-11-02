@@ -41,7 +41,7 @@
         "serviceAccount": "Service Account"
       },
       "required": true,
-      "helpMarkDown": "Choose how this task authenticates with Appknox: Access Token or Service Account. Provide credentials for exactly one. Defaults to Access Token so existing pipelines are unaffected."
+      "helpMarkDown": "Choose how this task authenticates with Appknox: Access Token or Service Account. Provide credentials for exactly one. Defaults to Access Token."
     },
     {
       "name": "accessToken",
