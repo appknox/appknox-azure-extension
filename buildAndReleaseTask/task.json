@@ -41,7 +41,7 @@
         "serviceAccount": "Service Account"
       },
       "required": true,
-      "helpMarkDown": "Choose how this task authenticates with Appknox. Controls which fields are shown below, and also decides which credential wins if both Access Token and Service Account fields end up populated (e.g. a leftover value in a field hidden by switching this dropdown). Defaults to Access Token so existing pipelines are unaffected."
+      "helpMarkDown": "Choose how this task authenticates with Appknox: Access Token or Service Account. Provide credentials for exactly one. Defaults to Access Token so existing pipelines are unaffected."
     },
     {
       "name": "accessToken",
