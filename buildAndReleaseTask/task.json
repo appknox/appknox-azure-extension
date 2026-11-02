@@ -32,11 +32,24 @@
       "helpMarkDown": "Path to binary file"
     },
     {
+      "name": "authType",
+      "type": "pickList",
+      "label": "Authentication Type",
+      "defaultValue": "pat",
+      "options": {
+        "pat": "Access Token",
+        "serviceAccount": "Service Account"
+      },
+      "required": true,
+      "helpMarkDown": "Choose how this task authenticates with Appknox. This only controls which fields are shown below -- defaults to Access Token so existing pipelines are unaffected."
+    },
+    {
       "name": "accessToken",
       "type": "string",
       "label": "Access Token",
       "defaultValue": "",
       "required": false,
+      "visibleRule": "authType = pat",
       "helpMarkDown": "Appknox Personal Access Token. Provide either this or a Service Account (Access Key ID + Access Key Secret below), not both."
     },
     {
@@ -45,6 +58,7 @@
       "label": "Service Account Access Key ID",
       "defaultValue": "",
       "required": false,
+      "visibleRule": "authType = serviceAccount",
       "helpMarkDown": "Appknox Service Account Access Key ID. Must be provided together with Access Key Secret, as an alternative to Access Token."
     },
     {
@@ -53,6 +67,7 @@
       "label": "Service Account Access Key Secret",
       "defaultValue": "",
       "required": false,
+      "visibleRule": "authType = serviceAccount",
       "helpMarkDown": "Appknox Service Account Access Key Secret. Must be provided together with Access Key ID, as an alternative to Access Token."
     },
     {

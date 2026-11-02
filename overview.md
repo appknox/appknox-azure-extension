@@ -7,6 +7,7 @@ Following are parameters needed for the task:
 | param                   | required? | description                                                                                                                                              |
 |-------------------------|:---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `filePath`              |   true    | Path to APK/IPA binary file                                                                                                                              |
+| `authType`              |   false   | Classic-editor only -- picks which credential field(s) are shown: `pat` (Access Token) or `serviceAccount` (Service Account). Defaults to `pat`. Purely a display toggle; doesn't affect validation, and YAML pipelines can ignore it entirely |
 | `accessToken`           |   false   | Appknox Personal Access Token (PAT). Exactly one of `accessToken` or a Service Account (`accessKeyId` + `accessKeySecret`) is required                   |
 | `accessKeyId`           |   false   | Appknox Service Account Access Key ID. Must be provided together with `accessKeySecret`, as an alternative to `accessToken`                              |
 | `accessKeySecret`       |   false   | Appknox Service Account Access Key Secret. Must be provided together with `accessKeyId`, as an alternative to `accessToken`                              |
@@ -38,7 +39,7 @@ Following are parameters needed for the task:
 
     ![](images/basic-config.png)
 
-3. `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab. Use `accessToken` for a Personal Access Token, or `accessKeyId` + `accessKeySecret` for a Service Account (created by an organization owner or admin from the Appknox dashboard) -- provide exactly one of the two.
+3. Pick **Authentication Type** -- `Access Token` or `Service Account` -- to show the matching credential field(s); it defaults to `Access Token` so existing pipelines are unaffected. `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab. Use `accessToken` for a Personal Access Token, or `accessKeyId` + `accessKeySecret` for a Service Account (created by an organization owner or admin from the Appknox dashboard) -- provide exactly one of the two.
 
     ![](images/variable.png)
 
