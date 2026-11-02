@@ -126,7 +126,7 @@ steps:
     host: 'https://secure.appknox.com/'
 ```
 
-**Note:** Provide exactly one of `accessToken` or the `accessKeyId`/`accessKeySecret` pair. Providing only one of the pair, or neither, fails the task with a validation error before any scan is attempted. Providing **both** no longer fails outright -- `authType` breaks the tie (`accessToken` wins unless `authType` is explicitly `serviceAccount`), since the classic editor's Authentication Type dropdown only hides a field rather than clearing it, so a stale leftover value is a normal occurrence there rather than a deliberate mistake.
+**Note:** Provide exactly one of `accessToken` or the `accessKeyId`/`accessKeySecret` pair. Providing only one of the pair, or neither, fails the task with a validation error before any scan is attempted. If both are set, `authType` decides which one is used (`accessToken` wins unless `authType` is `serviceAccount`).
 
 ### Using Exploit Likelihood Threshold
 ```
