@@ -7,7 +7,7 @@ Following are parameters needed for the task:
 | param                   | required? | description                                                                                                                                              |
 |-------------------------|:---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `filePath`              |   true    | Path to APK/IPA binary file                                                                                                                              |
-| `authType`              |   false   | Classic-editor only -- picks which credential field(s) are shown: `pat` (Access Token) or `serviceAccount` (Service Account). Defaults to `pat`. Purely a display toggle; doesn't affect validation, and YAML pipelines can ignore it entirely |
+| `authType`              |   false   | Primarily a classic-editor display toggle -- picks which credential field(s) are shown: `pat` (Access Token) or `serviceAccount` (Service Account). Defaults to `pat`. Only affects validation as a tie-breaker when both `accessToken` and the Service Account pair are set (see note below); otherwise ignored, so YAML pipelines that set only one credential can omit it entirely |
 | `accessToken`           |   false   | Appknox Personal Access Token (PAT). Exactly one of `accessToken` or a Service Account (`accessKeyId` + `accessKeySecret`) is required                   |
 | `accessKeyId`           |   false   | Appknox Service Account Access Key ID. Must be provided together with `accessKeySecret`, as an alternative to `accessToken`                              |
 | `accessKeySecret`       |   false   | Appknox Service Account Access Key Secret. Must be provided together with `accessKeyId`, as an alternative to `accessToken`                              |
@@ -126,7 +126,7 @@ steps:
     host: 'https://secure.appknox.com/'
 ```
 
-**Note:** Provide exactly one of `accessToken` or the `accessKeyId`/`accessKeySecret` pair -- providing both, only one of the pair, or neither fails the task with a validation error before any scan is attempted.
+**Note:** Provide exactly one of `accessToken` or the `accessKeyId`/`accessKeySecret` pair. Providing only one of the pair, or neither, fails the task with a validation error before any scan is attempted. Providing **both** no longer fails outright -- `authType` breaks the tie (`accessToken` wins unless `authType` is explicitly `serviceAccount`), since the classic editor's Authentication Type dropdown only hides a field rather than clearing it, so a stale leftover value is a normal occurrence there rather than a deliberate mistake.
 
 ### Using Exploit Likelihood Threshold
 ```
