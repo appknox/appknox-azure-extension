@@ -39,7 +39,7 @@ Following are parameters needed for the task:
 
     ![](images/basic-config.png)
 
-3. Pick **Authentication Type** -- `Access Token` or `Service Account` -- to show the matching credential field(s); it defaults to `Access Token` so existing pipelines are unaffected. `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab. Use `accessToken` for a Personal Access Token, or `accessKeyId` + `accessKeySecret` for a Service Account (created by an organization owner or admin from the Appknox dashboard) -- provide exactly one of the two.
+3. Pick **Authentication Type** -- `Access Token` or `Service Account` -- to show the matching credential field(s). `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab. Use `accessToken` for a Personal Access Token, or `accessKeyId` + `accessKeySecret` for a Service Account (created by an organization owner or admin from the Appknox dashboard) -- provide exactly one of the two.
 
     ![](images/variable.png)
 
