@@ -170,7 +170,7 @@ Confirm the GUID matches the one above and the patch number matches what you int
 
 ## Testing before production
 
-1. In `vss-extension.json`, set `"id": "appknox-test"` and `"name": "Appknox-test"`.
+1. In `vss-extension.json`, set `"id": "appknox-test"` and `"name": "Appknox Test"`.
 2. Build and publish per below.
 3. Share the extension with your test Azure DevOps org if not already shared:
    ```bash
