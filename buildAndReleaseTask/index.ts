@@ -296,10 +296,16 @@ async function upload() {
         // argument) into the build log, which would otherwise leak them in
         // plain text regardless of whether the pipeline variable is marked secret.
         const credentialEnv = resolveCredentialEnv(token, accessKeyId, accessKeySecret, authType);
+        // Strip any ambient Appknox credential vars already present in the
+        // agent's environment (e.g. leftover from an unrelated earlier step)
+        // before applying the ones actually resolved above -- otherwise a
+        // stray APPKNOX_ACCESS_TOKEN could linger alongside a Service Account
+        // this task never set, and the CLI would reject both as provided.
+        const { APPKNOX_ACCESS_TOKEN, APPKNOX_ACCESS_KEY_ID, APPKNOX_ACCESS_KEY_SECRET, ...cleanEnv } = process.env;
         const _execOptions = <trm.IExecOptions>{
             silent: false,
             failOnStdErr: false,
-            env: { ...process.env, ...credentialEnv },
+            env: { ...cleanEnv, ...credentialEnv },
         }
 
         if (thresholdType !== 'risk' && thresholdType !== 'healthScore' && thresholdType !== 'exploitLikelihood') {
