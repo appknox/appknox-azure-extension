@@ -3,7 +3,7 @@
   "id": "Appknox",
   "name": "Appknox",
   "description": "Appknox Automated Security Scanning",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "publisher": "Appknox",
   "targets": [
     {
@@ -89,7 +89,10 @@
   },
   "screenshots": [
     {
-      "path": "images/basic-config.png"
+      "path": "images/basic-config-pat.png"
+    },
+    {
+      "path": "images/basic-config-service-account.png"
     },
     {
       "path": "images/marketplace.png"
