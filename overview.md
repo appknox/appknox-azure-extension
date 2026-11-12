@@ -37,7 +37,9 @@ Following are parameters needed for the task:
 
 2. Configured the required params.
 
-    ![](images/basic-config.png)
+    ![](images/basic-config-pat.png)
+
+    ![](images/basic-config-service-account.png)
 
 3. Pick **Authentication Type** -- `Access Token` or `Service Account` -- to show the matching credential field(s). `$(appknoxtoken)` is a build variable with its lock enabled on the Variables tab. Use `accessToken` for a Personal Access Token, or `accessKeyId` + `accessKeySecret` for a Service Account (created by an organization owner or admin from the Appknox dashboard) -- provide exactly one of the two.
 
